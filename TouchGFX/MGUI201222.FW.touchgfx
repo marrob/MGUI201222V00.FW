@@ -1,0 +1,177 @@
+{
+  "Application": {
+    "Screens": [
+      {
+        "Name": "Main",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "backgroundBox",
+            "Width": 1024,
+            "Height": 600,
+            "Visible": false
+          },
+          {
+            "Type": "Image",
+            "Name": "backgroundImage",
+            "X": 323,
+            "Y": 129,
+            "Width": 480,
+            "Height": 272,
+            "RelativeFilename": "bg.png"
+          },
+          {
+            "Type": "Image",
+            "Name": "counterBackgroundImage",
+            "X": 487,
+            "Y": 28,
+            "Width": 152,
+            "Height": 154,
+            "RelativeFilename": "counter_box.png"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "countTxt",
+            "X": 487,
+            "Y": 50,
+            "Width": 152,
+            "Height": 89,
+            "TextId": "TextId1",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "TextId": "__SingleUse_J4RQ",
+              "UseBuffer": true,
+              "BufferSize": 3
+            }
+          },
+          {
+            "Type": "Image",
+            "Name": "image1",
+            "X": 323,
+            "Y": 261,
+            "Width": 480,
+            "Height": 79,
+            "RelativeFilename": "ca_logo_480x72.png"
+          },
+          {
+            "Type": "Button",
+            "Name": "buttonDown",
+            "X": 868,
+            "Y": 506,
+            "Width": 130,
+            "Height": 56,
+            "Pressed": "down_btn_pressed.png",
+            "Released": "down_btn.png"
+          },
+          {
+            "Type": "Button",
+            "Name": "buttonUp",
+            "X": 133,
+            "Y": 506,
+            "Width": 130,
+            "Height": 56,
+            "Pressed": "up_btn_pressed.png",
+            "Released": "up_btn.png"
+          },
+          {
+            "Type": "ImageProgress",
+            "Name": "imageProgress2",
+            "X": 361,
+            "Y": 209,
+            "Width": 404,
+            "Height": 34,
+            "FileNameProgress": "__designer\\Blue_ProgressIndicators_fill_tiling_progress_indicator_fill_striped_wide_horizontal.png",
+            "Direction": "Right",
+            "Style": "Style5",
+            "FileNameBackground": "__designer\\Blue_ProgressIndicators_bg_large_progress_indicator_bg_square_0_degrees.png",
+            "IndicatorPositionX": 2,
+            "IndicatorPositionY": 2,
+            "IndicatorPositionWidth": 400,
+            "IndicatorPositionHeight": 30,
+            "ProgressRangeMax": 100,
+            "ProgressInitialValue": 60
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "IncreaseValue",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "buttonUp"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "increaseValue"
+            }
+          },
+          {
+            "InteractionName": "DecreaseValue",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "buttonDown"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "decreaseValue"
+            }
+          }
+        ]
+      }
+    ],
+    "CustomContainerDefinitions": [],
+    "Name": "MGUI201222.FW",
+    "Resolution": {
+      "Width": 1024,
+      "Height": 600
+    },
+    "SelectedColorDepth": 16,
+    "StartupScreenName": "Main",
+    "SelectedStartupLanguage": "GB",
+    "Skin": "Blue",
+    "TouchGfxPath": "../Middlewares/ST/touchgfx",
+    "UIPath": ".",
+    "AvailableColorDepths": [
+      16
+    ],
+    "AvailableLCDs": {
+      "16": "LCD16bpp"
+    },
+    "AvailableSections": [
+      "ExtFlashSection",
+      "IntFlashSection"
+    ],
+    "AvailableResolutions": [
+      {
+        "Width": 1024,
+        "Height": 600
+      }
+    ],
+    "PhysicalButtons": [],
+    "FrameworkFeatures": {
+      "LCD16bpp": {
+        "Id": "LCD16bpp",
+        "IsEnabled": true
+      }
+    },
+    "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
+    "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
+    "PostGenerateTargetCommand": "touchgfx update_project --project-file=../MGUI201222.FW.ioc --platform=m7",
+    "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
+    "RunSimulatorCommand": "build\\bin\\simulator.exe",
+    "CompileTargetCommand": "make -f ../gcc/Makefile -j8",
+    "FlashTargetCommand": "make -f ../gcc/Makefile flash -j8",
+    "LandscapeSkinX": 0,
+    "LandscapeSkinY": 0,
+    "PortraitSkinX": 0,
+    "PortraitSkinY": 0,
+    "DisplayOrientation": "Landscape",
+    "Family": "STM32F7"
+  },
+  "Version": "4.18.0",
+  "CreatedBy": "4.15.0"
+}

@@ -1,0 +1,16 @@
+﻿Debug/*
+Release/*
+STM32CubeIDE/Debug/*
+TouchGFX/build/*
+*.bat
+*.Margit Róbert
+*.uvopt
+*.bak
+*.dep
+*.sdf
+*.suo
+*.filters
+*.user
+*.opensdf
+*.tmp
+
