@@ -230,9 +230,11 @@ source_files := $(call find, $(source_paths),*.cpp)
 
 board_c_files :=
 
+#Drivers 
 board_c_files := \
-	$(Drivers_path)/Components/gt911/gt911_tgfx.c \
-  $(Drivers_path)/LED/LiveLed.c
+	$(Drivers_path)/gt911/gt911_tgfx.c \
+  $(Drivers_path)/LED/LiveLed.c \
+  $(Drivers_path)/MX25/mx25.c
 #	$(Drivers_path)/BSP/stm32746g_discovery_qspi.c \
 
 board_cpp_files :=
@@ -241,9 +243,9 @@ board_include_paths := \
     Drivers/CMSIS/Device/ST/STM32F7xx/Include \
     Drivers/CMSIS/Include \
     $(cubemx_middlewares_path)/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
-    Drivers/Components/gt911 \
-    Drivers/BSP \
-    Drivers/LED
+    Drivers/gt911 \
+    Drivers/LED \
+    Drivers/MX25 
 
 asm_source_files := $(makefile_path_relative)/startup_stm32f746nghx.s
 
