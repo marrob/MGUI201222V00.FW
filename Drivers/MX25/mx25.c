@@ -3,33 +3,30 @@
 #include "mx25.h"
 
 /* Private variables ---------------------------------------------------------*/
-QSPI_HandleTypeDef *QSPIHandle;
 
 /* Private functions ---------------------------------------------------------*/
 uint8_t MX25_Init(QSPI_HandleTypeDef *hqspi)
 { 
-  QSPIHandle = hqspi;
-
-  if (MX25_ResetMemory(QSPIHandle) != MX25_OK)
+	MX25_InfoTypeDef pInfo;
+	
+  if (MX25_ResetMemory(hqspi) != MX25_OK)
     return MX25_NOT_SUPPORTED;
-
-  if(MX25_Config(QSPIHandle) != MX25_OK)
+	
+  if(MX25_Config(hqspi) != MX25_OK)
     return MX25_ERROR;
- 
-  MX25_InfoTypeDef pInfo;
-  MX25_GetInfo(&pInfo);
 
+  MX25_GetInfo(&pInfo);
 
   return MX25_OK;
 }
 
 
-uint8_t MX25_ReadId(uint8_t *id, uint32_t size)
+uint8_t MX25_ReadId(QSPI_HandleTypeDef *hqspi, uint8_t *id, uint32_t size)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_READ_ID_CMD__RDID;
+  s_command.Instruction       = MX25_1L_READ_ID_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_1_LINE;
@@ -39,21 +36,21 @@ uint8_t MX25_ReadId(uint8_t *id, uint32_t size)
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
 
-  if (HAL_QSPI_Receive(QSPIHandle, id, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Receive(hqspi, id, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
 
   return MX25_OK;
 }
 
-uint8_t MX25_NormalRead(uint8_t* data, uint32_t address, uint32_t size)
+uint8_t MX25_NormalRead(QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t address, uint32_t size)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_READ_CMD__READ;
+  s_command.Instruction       = MX25_4B_1L_READ;
   s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
   s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
   s_command.Address           = address;
@@ -65,54 +62,80 @@ uint8_t MX25_NormalRead(uint8_t* data, uint32_t address, uint32_t size)
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
 
   /* Set S# timing for Read command */
-  MODIFY_REG(QSPIHandle->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
+  MODIFY_REG(hqspi->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
 
-  if (HAL_QSPI_Receive(QSPIHandle, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Receive(hqspi, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
 
   /* Restore S# timing for nonRead commands */
-  MODIFY_REG(QSPIHandle->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
+  MODIFY_REG(hqspi->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
 
   return MX25_OK;
 }
 
-uint8_t MX25_Read(uint8_t* data, uint32_t address, uint32_t size)
+uint8_t MX25_Read(QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t address, uint32_t size)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_4READ_CMD__4READ;
+  s_command.Instruction       = MX25_4B_4L_READ;
   s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
   s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
   s_command.Address           = address;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_4_LINES;
-  s_command.DummyCycles       = MX25_DUMMY_CYCLES_READ_QUAD;
+  s_command.DummyCycles       = MX25_4L_DUMMY_CYCLES_READ;
   s_command.NbData            = size;
   s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
   
-  if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
   
   /* Set S# timing for Read command */
-  MODIFY_REG(QSPIHandle->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
+  MODIFY_REG(hqspi->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
   
-  if (HAL_QSPI_Receive(QSPIHandle, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Receive(hqspi, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
   
   /* Restore S# timing for nonRead commands */
-  MODIFY_REG(QSPIHandle->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
+  MODIFY_REG(hqspi->Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
 
   return MX25_OK;
 }
 
-uint8_t MX25_NormalWrite(uint8_t* data, uint32_t address, uint32_t size)
+
+uint8_t MX25_EnableMemoryMappedMode(QSPI_HandleTypeDef *hqspi)
+{
+  QSPI_CommandTypeDef      s_command;
+  QSPI_MemoryMappedTypeDef s_mem_mapped_cfg;
+
+  s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+  s_command.Instruction       = MX25_4B_4L_READ;
+  s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
+  s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
+  s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+  s_command.DataMode          = QSPI_DATA_4_LINES;
+  s_command.DummyCycles       = MX25_4L_DUMMY_CYCLES_READ;
+  s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
+  s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+  s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+  
+  s_mem_mapped_cfg.TimeOutActivation = QSPI_TIMEOUT_COUNTER_DISABLE;
+  s_mem_mapped_cfg.TimeOutPeriod     = 0;
+  
+  if (HAL_QSPI_MemoryMapped(hqspi, &s_command, &s_mem_mapped_cfg) != HAL_OK)
+    return MX25_ERROR;
+
+  return MX25_OK;
+}
+
+uint8_t MX25_NormalWrite(QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t address, uint32_t size)
 {
   QSPI_CommandTypeDef s_command;
   uint32_t end_addr, current_size, current_addr;
@@ -132,7 +155,7 @@ uint8_t MX25_NormalWrite(uint8_t* data, uint32_t address, uint32_t size)
 
   /* Initialize the program command */
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_PAGE_PROG_CMD__PP;
+  s_command.Instruction       = MX25_4B_1L_PP_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
   s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
@@ -149,25 +172,25 @@ uint8_t MX25_NormalWrite(uint8_t* data, uint32_t address, uint32_t size)
     s_command.NbData  = current_size;
 
     /* Enable write operations */
-    if (MX25_WriteEnable(QSPIHandle) != MX25_OK)
+    if (MX25_WriteEnable(hqspi) != MX25_OK)
     {
       return MX25_ERROR;
     }
 
     /* Configure the command */
-    if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+    if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return MX25_ERROR;
     }
 
     /* Transmission of the data */
-    if (HAL_QSPI_Transmit(QSPIHandle, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+    if (HAL_QSPI_Transmit(hqspi, data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return MX25_ERROR;
     }
 
     /* Configure automatic polling mode to wait for end of program */
-    if (MX25_AutoPollingMemReady(QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != MX25_OK)
+    if (MX25_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != MX25_OK)
     {
       return MX25_ERROR;
     }
@@ -181,7 +204,7 @@ uint8_t MX25_NormalWrite(uint8_t* data, uint32_t address, uint32_t size)
   return MX25_OK;
 }
 
-uint8_t MX25_Write(uint8_t* pData, uint32_t addr, uint32_t size)
+uint8_t MX25_Write(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t addr, uint32_t size)
 {
   QSPI_CommandTypeDef s_command;
   uint32_t end_addr, current_size, current_addr;
@@ -201,7 +224,7 @@ uint8_t MX25_Write(uint8_t* pData, uint32_t addr, uint32_t size)
 
   /* Initialize the program command */
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_FAST_PROG_CMD__PP4B;
+  s_command.Instruction       = MX25_4B_4L_PP_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
   s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
@@ -218,25 +241,25 @@ uint8_t MX25_Write(uint8_t* pData, uint32_t addr, uint32_t size)
     s_command.NbData  = current_size;
 
     /* Enable write operations */
-    if (MX25_WriteEnable(QSPIHandle) != MX25_OK)
+    if (MX25_WriteEnable(hqspi) != MX25_OK)
     {
       return MX25_ERROR;
     }
     
     /* Configure the command */
-    if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+    if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return MX25_ERROR;
     }
     
     /* Transmission of the data */
-    if (HAL_QSPI_Transmit(QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+    if (HAL_QSPI_Transmit(hqspi, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return MX25_ERROR;
     }
     
     /* Configure automatic polling mode to wait for end of program */  
-    if (MX25_AutoPollingMemReady(QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != MX25_OK)
+    if (MX25_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != MX25_OK)
     {
       return MX25_ERROR;
     }
@@ -250,15 +273,16 @@ uint8_t MX25_Write(uint8_t* pData, uint32_t addr, uint32_t size)
   return MX25_OK;
 }
 
-uint8_t MX25_Erase64kBlock(uint32_t BlockAddress)
+//1block = 64k
+uint8_t MX25_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t blockAddress)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_ERASE_64K_CMD__BE4B;
+  s_command.Instruction       = MX25_4B_1L_SECTOR_ERASE_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
   s_command.AddressSize       = QSPI_ADDRESS_32_BITS;
-  s_command.Address           = BlockAddress;
+  s_command.Address           = blockAddress;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_NONE;
   s_command.DummyCycles       = 0;
@@ -266,24 +290,24 @@ uint8_t MX25_Erase64kBlock(uint32_t BlockAddress)
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (MX25_WriteEnable(QSPIHandle) != MX25_OK)
+  if (MX25_WriteEnable(hqspi) != MX25_OK)
     return MX25_ERROR;
 
-  if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
   
-  if (MX25_AutoPollingMemReady(QSPIHandle, MX25_SUBSECTOR_ERASE_MAX_TIME) != MX25_OK)
+  if (MX25_AutoPollingMemReady(hqspi, MX25_SUBSECTOR_ERASE_MAX_TIME) != MX25_OK)
     return MX25_ERROR;
 
   return MX25_OK;
 }
 
-uint8_t MX25_EraseChip(void)
+uint8_t MX25_EraseChip(QSPI_HandleTypeDef *hqspi)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_CHIP_ERASE_CMD__CE;
+  s_command.Instruction       = MX25_1L_BULK_ERASE_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_NONE;
@@ -292,13 +316,13 @@ uint8_t MX25_EraseChip(void)
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (MX25_WriteEnable(QSPIHandle) != MX25_OK)
+  if (MX25_WriteEnable(hqspi) != MX25_OK)
     return MX25_ERROR;
 
-  if (HAL_QSPI_Command(QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
   
-  if (MX25_AutoPollingMemReady(QSPIHandle, MX25_BULK_ERASE_MAX_TIME) != MX25_OK)
+  if (MX25_AutoPollingMemReady(hqspi, MX25_BULK_ERASE_MAX_TIME) != MX25_OK)
     return MX25_ERROR;
 
   return MX25_OK;
@@ -315,12 +339,13 @@ uint8_t MX25_GetInfo(MX25_InfoTypeDef* pInfo)
   return MX25_OK;
 }
 
+
 uint8_t MX25_ResetMemory(QSPI_HandleTypeDef *hqspi)
 {
   QSPI_CommandTypeDef s_command;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_RESET_ENABLE_CMD__RSTEN;
+  s_command.Instruction       = MX25_1L_RESET_ENABLE_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_NONE;
@@ -330,19 +355,28 @@ uint8_t MX25_ResetMemory(QSPI_HandleTypeDef *hqspi)
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
   if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-  {
     return MX25_ERROR;
-  }
+	
+	s_command.Instruction = MX25_1L_RESET_CMD;
+  if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+    return MX25_ERROR;
+
+  if (MX25_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != MX25_OK)
+    return MX25_ERROR;
+
   return MX25_OK;
 }
+
 
 
 uint8_t MX25_Config(QSPI_HandleTypeDef *hqspi)
 {
   QSPI_CommandTypeDef s_command;
-
+	uint8_t rx_satus_config[] = { 0x00, 0x00 };
+	uint8_t tx_satus_config[] = { 0x00, 0x20 };
+	
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_READ_CFG_CMD__RDCR;
+  s_command.Instruction       = MX25_1L_READ_CFG_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_1_LINE;
@@ -355,7 +389,7 @@ uint8_t MX25_Config(QSPI_HandleTypeDef *hqspi)
   if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
 
-  uint8_t rx_satus_config[] = { 0x00, 0x00 };
+  
 
   if (HAL_QSPI_Receive(hqspi, rx_satus_config, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
@@ -368,8 +402,8 @@ uint8_t MX25_Config(QSPI_HandleTypeDef *hqspi)
    *   |     |     |       |     |     |     |     |     | DC1 | DC0 | 4BYTE | PBE |  TB | REV |ODS1 |ODS0 |
    *   |     |     |       |     |     |     |     |     |     |     |       |     |     |     |     |     |
    */
-  s_command.Instruction = MX25_WRITE_CFG_SR_CMD__WRSR;
-  uint8_t tx_satus_config[] = { 0x00, 0x20 };
+  s_command.Instruction = MX25_1L_WRITE_CFG_SR_CMD;
+  
       
   if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     return MX25_ERROR;
@@ -386,7 +420,7 @@ uint8_t MX25_WriteEnable(QSPI_HandleTypeDef *hqspi)
   QSPI_AutoPollingTypeDef s_config;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_WRITE_EN_CMD__WREN;
+  s_command.Instruction       = MX25_1L_WRITE_EN_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_NONE;
@@ -406,7 +440,7 @@ uint8_t MX25_WriteEnable(QSPI_HandleTypeDef *hqspi)
   s_config.Interval        = 0x10;
   s_config.AutomaticStop   = QSPI_AUTOMATIC_STOP_ENABLE;
 
-  s_command.Instruction    = MX25_READ_STATUS_CMD__RDSR;
+  s_command.Instruction    = MX25_1L_READ_STATUS_CMD;
   s_command.DataMode       = QSPI_DATA_1_LINE;
 
   if (HAL_QSPI_AutoPolling(hqspi, &s_command, &s_config, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
@@ -415,13 +449,14 @@ uint8_t MX25_WriteEnable(QSPI_HandleTypeDef *hqspi)
   return MX25_OK;
 }
 
+
 uint8_t MX25_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Timeout)
 {
   QSPI_CommandTypeDef     s_command;
   QSPI_AutoPollingTypeDef s_config;
 
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  s_command.Instruction       = MX25_READ_STATUS_CMD__RDSR;
+  s_command.Instruction       = MX25_1L_READ_STATUS_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
   s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   s_command.DataMode          = QSPI_DATA_1_LINE;
@@ -442,4 +477,5 @@ uint8_t MX25_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Timeout)
 
   return MX25_OK;
 }
+
 

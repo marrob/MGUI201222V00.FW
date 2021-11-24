@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "LiveLed.h"
 #include "string.h"
+#include "mx25.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -171,10 +172,15 @@ int main(void)
   hLiveLed.HalfPeriodTimeMs = 500;
   LiveLedInit(&hLiveLed);
 
+  /*** Display ***/
   LCD_Enable();
 
-  /* USER CODE END 2 */
+  /*** Flash ***/
+  MX25_Init(&hqspi);
+  MX25_EnableMemoryMappedMode(&hqspi);
+  HAL_NVIC_DisableIRQ(QUADSPI_IRQn);
 
+  /* USER CODE END 2 */
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */

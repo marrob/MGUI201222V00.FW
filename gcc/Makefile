@@ -321,8 +321,8 @@ $(binary_output_path)/$(target_executable): $(object_files) $(object_asm_files)
 	@$(objcopy) --remove-section=ExtFlashSection $@ $(@D)/intflash.elf 2>/dev/null
 	@echo "  intflash.hex - Internal flash, hex"
 	@$(objcopy) -O ihex --remove-section=ExtFlashSection $@ $(@D)/intflash.hex
-#	@echo "  extflash.bin - External flash, binary"
-#	@$(objcopy) -O binary --only-section=*FlashSection $@ $(@D)/extflash.bin
+	@echo "  extflash.bin - External flash, binary"
+	@$(objcopy) -O binary --only-section=*FlashSection $@ $(@D)/extflash.bin
 
 $(object_output_path)/touchgfx/%.o: $(touchgfx_path)/%.cpp TouchGFX/config/gcc/app.mk
 	@echo Compiling $<

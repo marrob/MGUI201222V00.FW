@@ -7,8 +7,8 @@
 #endif 
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-//#include "../Components/MX25L25673GM2I/MX25L25673GM2I.h"
+#include "stm32f7xx.h"
+
 
   
 /* Exported constants --------------------------------------------------------*/
@@ -22,39 +22,44 @@
 #define MX25_SUBSECTOR_SIZE                  0x1000    /* 4096 subsectors of 4kBytes */
 #define MX25_PAGE_SIZE                       0x100     /* 65536 pages of 256 bytes */
 
-#define MX25_DUMMY_CYCLES_READ_QUAD          6
+#define MX25_4L_DUMMY_CYCLES_READ            6
 #define MX25_BULK_ERASE_MAX_TIME             250000
 #define MX25_SUBSECTOR_ERASE_MAX_TIME        800
 
-/*** Reset Operations ***/
-#define MX25_RESET_ENABLE_CMD__RSTEN         0x66
-
 /*** Identification Operations ***/
-#define MX25_READ_ID_CMD__RDID               0x9F
+#define MX25_1L_READ_ID_CMD                  0x9F
+
+/*** Reset Operations ***/
+#define MX25_1L_RESET_ENABLE_CMD             0x66
+#define MX25_1L_RESET_CMD                    0x99
 
 /*** Read Operations ***/
-#define MX25_READ_CMD__READ                  0x03
-#define MX25_4READ_CMD__4READ                0xEB
+#define MX25_3B_1L_READ                      0x03
+#define MX25_4B_1L_READ                      0x13
+#define MX25_4B_4L_READ                      0xEC
 
 /*** Write Operations ***/
-#define MX25_WRITE_EN_CMD__WREN              0x06
+#define MX25_1L_WRITE_EN_CMD                 0x06
 
 /*** Config ***/
-#define MX25_READ_CFG_CMD__RDCR              0x15
-#define MX25_WRITE_CFG_SR_CMD__WRSR          0x01
-#define MX25_READ_STATUS_CMD__RDSR           0x05
+#define MX25_1L_READ_CFG_CMD                 0x15
+#define MX25_1L_WRITE_CFG_SR_CMD             0x01
+#define MX25_1L_READ_STATUS_CMD              0x05
 
 /*** Program Operations ***/
-#define MX25_PAGE_PROG_CMD__PP               0x02
-#define MX25_FAST_PROG_CMD__PP4B             0x38
+#define MX25_3B_1L_PP_CMD                    0x02
+#define MX25_4B_1L_PP_CMD                    0x12
+#define MX25_4B_4L_PP_CMD                    0x3E
 
 /*** Erase Operations ***/
-#define MX25_ERASE_64K_CMD__BE4B             0xDC
-#define MX25_CHIP_ERASE_CMD__CE              0xC7
+#define MX25_3B_1L_SECTOR_ERASE_CMD          0x20
+#define MX25_4B_1L_SECTOR_ERASE_CMD          0xDC
+#define MX25_1L_BULK_ERASE_CMD               0xC7
 
 /*** Status Register ***/
 #define MX25_SR_WIP                         ((uint8_t)0x01)
 #define MX25_SR_WEL                         ((uint8_t)0x02)
+
 
 /* Exported types ------------------------------------------------------------*/
 typedef struct {
@@ -66,15 +71,16 @@ typedef struct {
 } MX25_InfoTypeDef;
 
 /* Exported functions --------------------------------------------------------*/
-uint8_t MX25_Init       (QSPI_HandleTypeDef *hqspi);
-uint8_t MX25_ReadId(uint8_t *id, uint32_t size);
-uint8_t MX25_NormalRead(uint8_t* data, uint32_t address, uint32_t size);
-uint8_t MX25_Read       (uint8_t* data, uint32_t address, uint32_t size);
-uint8_t MX25_NormalWrite(uint8_t* data, uint32_t addr, uint32_t size);
-uint8_t MX25_Write      (uint8_t* data, uint32_t WriteAddr, uint32_t Size);
-uint8_t MX25_Erase64kBlock(uint32_t BlockAddress);
-uint8_t MX25_EraseChip  (void);
+uint8_t MX25_Init(QSPI_HandleTypeDef *hqspi);
+uint8_t MX25_ReadId(QSPI_HandleTypeDef *hqspi, uint8_t *id, uint32_t size);
+uint8_t MX25_NormalRead(QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t address, uint32_t size);
+uint8_t MX25_Read       (QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t address, uint32_t size);
+uint8_t MX25_NormalWrite(QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t addr, uint32_t size);
+uint8_t MX25_Write      (QSPI_HandleTypeDef *hqspi, uint8_t* data, uint32_t WriteAddr, uint32_t Size);
+uint8_t MX25_EraseBlock (QSPI_HandleTypeDef *hqspi, uint32_t blockAddress);
+uint8_t MX25_EraseChip  (QSPI_HandleTypeDef *hqspi);
 uint8_t MX25_GetInfo    (MX25_InfoTypeDef* pInfo);
+uint8_t MX25_EnableMemoryMappedMode(QSPI_HandleTypeDef *hqspi);
 
 uint8_t MX25_ResetMemory          (QSPI_HandleTypeDef *hqspi);
 uint8_t MX25_Config               (QSPI_HandleTypeDef *hqspi);
