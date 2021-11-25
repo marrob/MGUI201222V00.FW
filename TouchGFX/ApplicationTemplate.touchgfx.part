@@ -1,7 +1,7 @@
 
 {
   "Application": {
-    "Name": "MGUI201222.FWold",
+    "Name": "MGUI201222V00.FW",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",
     "AvailableColorDepths": [ 16 ],
     "AvailableLCDs":
@@ -14,7 +14,7 @@
         "Height": 600
       }
     ],
-    "PostGenerateTargetCommand" : "touchgfx update_project --project-file=../MGUI201222.FWold.ioc --platform=m7",
+    "PostGenerateTargetCommand" : "touchgfx update_project --project-file=../MGUI201222V00.FW.ioc --platform=m7",
     "Family" : "STM32F7",
     "SubFamily" : "STM32F7x6"
   },

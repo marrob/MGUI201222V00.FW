@@ -3,21 +3,25 @@
   <FileVersion>3.0</FileVersion>
   <Workspace>
     <WorkspaceType>Single-project</WorkspaceType>
-    <WorkspacePath>D:\@@@!ProjectS\MFWL130221\STM32CubeIDE\MGUI201222.FWold\</WorkspacePath>
+    <WorkspacePath>D:\@@@!ProjectS\MFWL130221\STM32CubeIDE\MGUI201222V00.FW\</WorkspacePath>
     <underRoot>false</underRoot>
     <TrustZone>0</TrustZone>
     <HAL_Driver>C:\Users\Margit Robert\STM32Cube\Repository\STM32Cube_FW_F7_V1.16.1</HAL_Driver>
     <CMSIS>Drivers/CMSIS</CMSIS>
     <Toolchain>STM32CubeIDE</Toolchain>
-    <IocFile>MGUI201222.FWold.ioc</IocFile>
+    <IocFile>MGUI201222V00.FW.ioc</IocFile>
     <Project>
-      <ProjectName>MGUI201222.FWold</ProjectName>
+      <ProjectName>MGUI201222V00.FW</ProjectName>
       <ProjectNature>Cpp</ProjectNature>
       <Secure/>
-      <filestoremove/>
+      <filestoremove>
+        <file>
+          <name>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.c</name>
+        </file>
+      </filestoremove>
       <configs>
         <config>
-          <name>MGUI201222.FWold</name>
+          <name>MGUI201222V00.FW</name>
           <mainSourceRepo>Core</mainSourceRepo>
           <sourceStructure>Advanced</sourceStructure>
           <device>STM32F746IGTx</device>
@@ -57,7 +61,7 @@
             <include>Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM7\r0p1</include>
             <include>Drivers\CMSIS\Device\ST\STM32F7xx\Include</include>
             <include>Drivers\CMSIS\Include</include>
-            <include>Drivers\Components\ft5336</include>
+            <include>..\Drivers\Components\ft5336</include>
             <include>..\Drivers\BSP</include>
           </Cincludes>
           <definestoremove>
@@ -73,7 +77,9 @@
             <Aincludes>
               <include/>
             </Aincludes>
-            <Cincludes/>
+            <Cincludes>
+              <include>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2</include>
+            </Cincludes>
           </inctoremove>
         </config>
       </configs>
@@ -135,7 +141,7 @@
           <group>
             <name>Components</name>
             <file>
-              <name>Drivers/Components/ft5336/ft5336.c</name>
+              <name>../Drivers/Components/ft5336/ft5336.c</name>
             </file>
           </group>
         </group>

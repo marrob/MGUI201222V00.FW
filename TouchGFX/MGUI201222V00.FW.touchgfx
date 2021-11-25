@@ -2,61 +2,31 @@
   "Application": {
     "Screens": [
       {
+        "Name": "Main",
         "Components": [
           {
             "Type": "Box",
-            "Color": {
-              "Red": 0,
-              "Green": 0,
-              "Blue": 0
-            },
-            "Alpha": 255,
             "Name": "backgroundBox",
-            "X": 0,
-            "Y": 0,
             "Width": 1024,
             "Height": 600,
-            "Visible": false,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            "Visible": false
           },
           {
             "Type": "Image",
-            "RelativeFilename": "bg.png",
-            "Alpha": 255,
-            "Name": "backgroundImage",
-            "X": 323,
-            "Y": 129,
-            "Width": 480,
-            "Height": 272,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
-          },
-          {
-            "Type": "Image",
-            "RelativeFilename": "counter_box.png",
-            "Alpha": 255,
             "Name": "counterBackgroundImage",
             "X": 487,
             "Y": 28,
             "Width": 152,
             "Height": 154,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            "RelativeFilename": "counter_box.png"
           },
           {
             "Type": "TextArea",
+            "Name": "countTxt",
+            "X": 487,
+            "Y": 50,
+            "Width": 152,
+            "Height": 89,
             "TextId": "TextId1",
             "TextRotation": "0",
             "Color": {
@@ -64,110 +34,65 @@
               "Green": 255,
               "Blue": 255
             },
-            "Alpha": 255,
-            "AutoSize": false,
-            "LineSpacing": 0,
             "Wildcard1": {
-              "TextId": "SingleUseId1",
+              "TextId": "__SingleUse_J4RQ",
               "UseBuffer": true,
               "BufferSize": 3
-            },
-            "Name": "countTxt",
-            "X": 487,
-            "Y": 50,
-            "Width": 152,
-            "Height": 89,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
-          },
-          {
-            "Type": "Image",
-            "RelativeFilename": "ca_logo_480x72.png",
-            "Alpha": 255,
-            "Name": "image1",
-            "X": 323,
-            "Y": 261,
-            "Width": 480,
-            "Height": 79,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            }
           },
           {
             "Type": "Button",
-            "Pressed": "down_btn_pressed.png",
-            "Released": "down_btn.png",
-            "Alpha": 255,
             "Name": "buttonDown",
             "X": 868,
             "Y": 506,
             "Width": 130,
             "Height": 56,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            "Pressed": "down_btn_pressed.png",
+            "Released": "down_btn.png"
           },
           {
             "Type": "Button",
-            "Pressed": "up_btn_pressed.png",
-            "Released": "up_btn.png",
-            "Alpha": 255,
             "Name": "buttonUp",
             "X": 133,
             "Y": 506,
             "Width": 130,
             "Height": 56,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            "Pressed": "up_btn_pressed.png",
+            "Released": "up_btn.png"
           },
           {
             "Type": "ImageProgress",
+            "Name": "imageProgress2",
+            "X": 361,
+            "Y": 209,
+            "Width": 404,
+            "Height": 34,
             "FileNameProgress": "__designer\\Blue_ProgressIndicators_fill_tiling_progress_indicator_fill_striped_wide_horizontal.png",
-            "AnchorAtZero": false,
             "Direction": "Right",
-            "Alpha": 255,
             "Style": "Style5",
             "FileNameBackground": "__designer\\Blue_ProgressIndicators_bg_large_progress_indicator_bg_square_0_degrees.png",
             "IndicatorPositionX": 2,
             "IndicatorPositionY": 2,
             "IndicatorPositionWidth": 400,
             "IndicatorPositionHeight": 30,
-            "ProgressRangeMin": 0,
             "ProgressRangeMax": 100,
-            "ProgressRangeSteps": 0,
-            "ProgressRangeStepsMin": 0,
-            "ProgressInitialValue": 60,
-            "Name": "imageProgress2",
-            "X": 361,
-            "Y": 209,
-            "Width": 404,
-            "Height": 34,
-            "Visible": true,
-            "LockPosition": false,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
+            "ProgressInitialValue": 60
+          },
+          {
+            "Type": "Button",
+            "Name": "button1",
+            "X": 104,
+            "Y": 152,
+            "Width": 170,
+            "Height": 60,
+            "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
+            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
+            "Style": "Style4"
           }
         ],
         "Interactions": [
           {
             "InteractionName": "IncreaseValue",
-            "HasCompletedTrigger": false,
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "buttonUp"
@@ -179,7 +104,6 @@
           },
           {
             "InteractionName": "DecreaseValue",
-            "HasCompletedTrigger": false,
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "buttonDown"
@@ -189,24 +113,11 @@
               "FunctionName": "decreaseValue"
             }
           }
-        ],
-        "Name": "Main",
-        "OverrideDefaultBufferSize": false,
-        "CanvasBufferSize": 0
+        ]
       }
     ],
     "CustomContainerDefinitions": [],
-    "TextEntries": [
-      {
-        "TextEntryId": "TextId1",
-        "IsResource": true
-      },
-      {
-        "TextEntryId": "SingleUseId1",
-        "IsResource": false
-      }
-    ],
-    "Name": "MGUI201222.FW",
+    "Name": "MGUI201222V00.FW",
     "Resolution": {
       "Width": 1024,
       "Height": 600
@@ -242,7 +153,7 @@
     },
     "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
     "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
-    "PostGenerateTargetCommand": "touchgfx update_project --project-file=../MGUI201222.FW.ioc --platform=m7",
+    "PostGenerateTargetCommand": "touchgfx update_project --project-file=../MGUI201222V00.FW.ioc --platform=m7",
     "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
     "RunSimulatorCommand": "build\\bin\\simulator.exe",
     "CompileTargetCommand": "make -f ../gcc/Makefile -j8",
@@ -254,6 +165,6 @@
     "DisplayOrientation": "Landscape",
     "Family": "STM32F7"
   },
-  "Version": "4.15.0",
+  "Version": "4.18.0",
   "CreatedBy": "4.15.0"
 }
