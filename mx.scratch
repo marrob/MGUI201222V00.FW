@@ -3,21 +3,21 @@
   <FileVersion>3.0</FileVersion>
   <Workspace>
     <WorkspaceType>Single-project</WorkspaceType>
-    <WorkspacePath>D:\@@@!ProjectS\MFWL130221\STM32CubeIDE\MGUI201222.FW\</WorkspacePath>
+    <WorkspacePath>D:\@@@!ProjectS\MFWL130221\STM32CubeIDE\MGUI201222.FWold\</WorkspacePath>
     <underRoot>false</underRoot>
     <TrustZone>0</TrustZone>
     <HAL_Driver>C:\Users\Margit Robert\STM32Cube\Repository\STM32Cube_FW_F7_V1.16.1</HAL_Driver>
     <CMSIS>Drivers/CMSIS</CMSIS>
     <Toolchain>STM32CubeIDE</Toolchain>
-    <IocFile>MGUI201222.FW.ioc</IocFile>
+    <IocFile>MGUI201222.FWold.ioc</IocFile>
     <Project>
-      <ProjectName>MGUI201222.FW</ProjectName>
+      <ProjectName>MGUI201222.FWold</ProjectName>
       <ProjectNature>Cpp</ProjectNature>
       <Secure/>
       <filestoremove/>
       <configs>
         <config>
-          <name>MGUI201222.FW</name>
+          <name>MGUI201222.FWold</name>
           <mainSourceRepo>Core</mainSourceRepo>
           <sourceStructure>Advanced</sourceStructure>
           <device>STM32F746IGTx</device>
@@ -73,9 +73,7 @@
             <Aincludes>
               <include/>
             </Aincludes>
-            <Cincludes>
-              <include>Drivers\BSP</include>
-            </Cincludes>
+            <Cincludes/>
           </inctoremove>
         </config>
       </configs>

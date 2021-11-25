@@ -181,6 +181,7 @@ int main(void)
   HAL_NVIC_DisableIRQ(QUADSPI_IRQn);
 
   /* USER CODE END 2 */
+
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -484,7 +485,7 @@ static void MX_QUADSPI_Init(void)
   hqspi.Init.ClockPrescaler = 100;
   hqspi.Init.FifoThreshold = 4;
   hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
-  hqspi.Init.FlashSize = 1;
+  hqspi.Init.FlashSize = 25;
   hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_6_CYCLE;
   hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
   hqspi.Init.FlashID = QSPI_FLASH_ID_1;

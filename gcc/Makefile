@@ -110,7 +110,7 @@ else
 imageconvert_executable := $(touchgfx_path)/framework/tools/imageconvert/build/win/imageconvert.out
 fontconvert_executable := $(touchgfx_path)/framework/tools/fontconvert/build/win/fontconvert.out
 stm32cubeProgrammer := STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe
-stm32cubeLoader := STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\ExternalLoader\\N25Q128A_STM32F746G-DISCO.stldr
+stm32cubeLoader := STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\ExternalLoader\\STM32F7-MX25-ExtFlashLoader.stldr
 
 ifneq ("$(shell find "$(PROGRAMFILES)\\$(stm32cubeProgrammer)" 2> nul )","")
 # STM32CubeProgrammer is placed in Program Files (x86)

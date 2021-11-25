@@ -157,9 +157,7 @@ void TS_IO_Write(uint8_t i2cAddr, uint16_t address, void *data, size_t length)
   */
 void TS_IO_Read(uint8_t Addr, uint16_t Reg, void *data, size_t length)
 {
-
     I2Cx_ReadMultiple(&hi2c2, Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint8_t*)data, length);
-
 }
 
 /**

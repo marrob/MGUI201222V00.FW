@@ -210,12 +210,12 @@ SECTIONS
         *(FontFlashSection FontFlashSection.*)
         *(.gnu.linkonce.r.*)
         . = ALIGN(0x4);
-    } >QUADSPI
+    } >FLASH
 
   TextFlashSection :
     {
         *(TextFlashSection TextFlashSection.*)
         *(.gnu.linkonce.r.*)
         . = ALIGN(0x4);
-    } >QUADSPI
+    } >FLASH
 }
