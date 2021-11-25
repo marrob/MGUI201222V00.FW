@@ -112,6 +112,10 @@ void LiveLedOn(void);
 /*** LCD ***/
 void LCD_Enable(void);
 
+
+
+void Console_Write(char *str);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -205,7 +209,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  ConsoleWrite("FreeRTOS osKernelStart()");
+  Console_Write("FreeRTOS osKernelStart()");
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -868,7 +872,7 @@ int _write(int file, char *ptr, int len)
 }
 */
 
-void ConsoleWrite(char *str)
+void Console_Write(char *str)
 {
   HAL_UART_Transmit(&huart1, (uint8_t*)str, strlen(str), 100);
 }

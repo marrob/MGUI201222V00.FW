@@ -86,7 +86,7 @@ typedef struct
 } GT911_TouchCoordinateTypeDef;
 
 
-void gt911_Init(uint16_t i2cAddress);
+void GT911_Init(uint16_t i2cAddress);
 void gt911_TS_GetXY(uint16_t i2cAddress, uint16_t *X, uint16_t *Y);
 uint8_t gt911_TS_DetectTouch(uint16_t i2cAddress);
 

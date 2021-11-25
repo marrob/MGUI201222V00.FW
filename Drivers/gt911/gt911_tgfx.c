@@ -14,16 +14,16 @@
 
 TS_DrvTypeDef gt911_ts_drv =
 {
-  gt911_Init,
+  GT911_Init,
   gt911_TS_DetectTouch,
   gt911_TS_GetXY,
 };
 
 
-uint8_t gt911_DetectTouch(I2C_HandleTypeDef *i2c, uint8_t *isDetect, uint8_t *currActiveTouchIdx);
-uint8_t gt911_PollTouch(uint16_t i2cAddress, uint8_t *isDetect, GT911_TouchCoordinateTypeDef touches[]);
+uint8_t GT911_DetectTouch(I2C_HandleTypeDef *i2c, uint8_t *isDetect, uint8_t *currActiveTouchIdx);
+uint8_t GT911_PollTouch(uint16_t i2cAddress, uint8_t *isDetect, GT911_TouchCoordinateTypeDef touches[]);
 
-void gt911_Init(uint16_t i2cAddress)
+void GT911_Init(uint16_t i2cAddress)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;

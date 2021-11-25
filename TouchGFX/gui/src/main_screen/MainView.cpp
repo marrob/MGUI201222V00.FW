@@ -47,7 +47,6 @@ void MainView::decreaseValue()
     {
         count--;
         imageProgress2.setValue(count);
-        ConsoleWrite("FreeRTOS osKernelStart()");
         setCount(count);
 
         if (0 == count)
