@@ -55,18 +55,13 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 #define GT911_I2C_DEV_ADDR       0xBA
 #define GT911_I2C_TIMEOUT_MS     100
-
 #define GT911_RT_COMMAND          0x8040
-
 #define GT911_REG_ID              0x8140
-
 #define GT911_REG_CFG_ADDR        0x8047
-
 #define GT911_READ_COORD_ADDR     0x814E
 #define GT911_STATUS_MODE_ADDR    0x81A8
 #define GT911_REG_FW_VER          0x8144
 #define GT911_POINT1X_COORD_LOW   0x8150
-
 
 typedef struct
 {
@@ -86,15 +81,12 @@ typedef struct
 } GT911_TouchCoordinateTypeDef;
 
 
-void GT911_Init(uint16_t i2cAddress);
-void gt911_TS_GetXY(uint16_t i2cAddress, uint16_t *X, uint16_t *Y);
-uint8_t gt911_TS_DetectTouch(uint16_t i2cAddress);
+void GT911_Init(I2C_HandleTypeDef *i2c);
+void GT911_GetXY(uint16_t *X, uint16_t *Y);
+uint8_t GT911_DetectTouch(I2C_HandleTypeDef *i2c);
 
-extern void TS_IO_Write(uint8_t i2cAddress, uint16_t address, void *data, size_t length);
-extern void TS_IO_Read(uint8_t i2cAddress, uint16_t adddress, void *data, size_t length);
-extern void TS_IO_Delay(uint32_t Delay);
 
-extern TS_DrvTypeDef gt911_ts_drv;
+extern TS_DrvTypeDef GT911_ts_drv;
 
 #ifdef __cplusplus
 }

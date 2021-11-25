@@ -62,7 +62,6 @@ public:
     virtual bool sampleTouch(int32_t& x, int32_t& y);
 
 private:
-    static const uint16_t TS_I2C_ADDRESS = ((uint16_t)0xBA);
 };
 
 #endif // STM32TOUCHCONTROLLER_HPP
