@@ -17,9 +17,6 @@ MainViewBase::MainViewBase() :
     backgroundBox.setVisible(false);
     backgroundBox.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
 
-    backgroundImage.setXY(323, 129);
-    backgroundImage.setBitmap(touchgfx::Bitmap(BITMAP_BG_ID));
-
     counterBackgroundImage.setXY(487, 28);
     counterBackgroundImage.setBitmap(touchgfx::Bitmap(BITMAP_COUNTER_BOX_ID));
 
@@ -29,9 +26,6 @@ MainViewBase::MainViewBase() :
     Unicode::snprintf(countTxtBuffer, COUNTTXT_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_J4RQ).getText());
     countTxt.setWildcard(countTxtBuffer);
     countTxt.setTypedText(touchgfx::TypedText(T_TEXTID1));
-
-    image1.setXY(323, 261);
-    image1.setBitmap(touchgfx::Bitmap(BITMAP_CA_LOGO_480X72_ID));
 
     buttonDown.setXY(868, 506);
     buttonDown.setBitmaps(touchgfx::Bitmap(BITMAP_DOWN_BTN_ID), touchgfx::Bitmap(BITMAP_DOWN_BTN_PRESSED_ID));
@@ -50,15 +44,17 @@ MainViewBase::MainViewBase() :
     imageProgress2.setValue(60);
     imageProgress2.setAnchorAtZero(false);
 
+    button1.setXY(104, 152);
+    button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
+
     add(__background);
     add(backgroundBox);
-    add(backgroundImage);
     add(counterBackgroundImage);
     add(countTxt);
-    add(image1);
     add(buttonDown);
     add(buttonUp);
     add(imageProgress2);
+    add(button1);
 }
 
 void MainViewBase::setupScreen()

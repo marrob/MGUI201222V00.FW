@@ -235,7 +235,6 @@ board_c_files := \
 	$(Drivers_path)/gt911/gt911_tgfx.c \
   $(Drivers_path)/LED/LiveLed.c \
   $(Drivers_path)/MX25/mx25.c
-#	$(Drivers_path)/BSP/stm32746g_discovery_qspi.c \
 
 board_cpp_files :=
 
@@ -245,8 +244,9 @@ board_include_paths := \
     $(cubemx_middlewares_path)/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
     Drivers/gt911 \
     Drivers/LED \
-    Drivers/MX25 
-
+    Drivers/MX25 \
+    Drivers/Common
+    
 asm_source_files := $(makefile_path_relative)/startup_stm32f746nghx.s
 
 c_compiler_options +=

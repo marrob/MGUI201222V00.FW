@@ -13,15 +13,6 @@
           },
           {
             "Type": "Image",
-            "Name": "backgroundImage",
-            "X": 323,
-            "Y": 129,
-            "Width": 480,
-            "Height": 272,
-            "RelativeFilename": "bg.png"
-          },
-          {
-            "Type": "Image",
             "Name": "counterBackgroundImage",
             "X": 487,
             "Y": 28,
@@ -48,15 +39,6 @@
               "UseBuffer": true,
               "BufferSize": 3
             }
-          },
-          {
-            "Type": "Image",
-            "Name": "image1",
-            "X": 323,
-            "Y": 261,
-            "Width": 480,
-            "Height": 79,
-            "RelativeFilename": "ca_logo_480x72.png"
           },
           {
             "Type": "Button",
@@ -95,6 +77,17 @@
             "IndicatorPositionHeight": 30,
             "ProgressRangeMax": 100,
             "ProgressInitialValue": 60
+          },
+          {
+            "Type": "Button",
+            "Name": "button1",
+            "X": 104,
+            "Y": 152,
+            "Width": 170,
+            "Height": 60,
+            "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
+            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
+            "Style": "Style4"
           }
         ],
         "Interactions": [

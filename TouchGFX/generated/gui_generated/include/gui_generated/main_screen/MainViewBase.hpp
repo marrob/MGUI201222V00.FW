@@ -43,13 +43,12 @@ protected:
      */
     touchgfx::Box __background;
     touchgfx::Box backgroundBox;
-    touchgfx::Image backgroundImage;
     touchgfx::Image counterBackgroundImage;
     touchgfx::TextAreaWithOneWildcard countTxt;
-    touchgfx::Image image1;
     touchgfx::Button buttonDown;
     touchgfx::Button buttonUp;
     touchgfx::ImageProgress imageProgress2;
+    touchgfx::Button button1;
 
     /*
      * Wildcard Buffers
