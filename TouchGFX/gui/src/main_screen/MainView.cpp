@@ -1,6 +1,5 @@
 #include <gui/main_screen/MainView.hpp>
 #include "BitmapDatabase.hpp"
-#include "main.h"
 
 MainView::MainView()
 {

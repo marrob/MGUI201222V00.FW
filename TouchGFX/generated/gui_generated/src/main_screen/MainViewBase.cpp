@@ -3,8 +3,8 @@
 /*********************************************************************************/
 #include <gui_generated/main_screen/MainViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
+#include <BitmapDatabase.hpp>
 
 MainViewBase::MainViewBase() :
     buttonCallback(this, &MainViewBase::buttonCallbackHandler)
@@ -12,13 +12,6 @@ MainViewBase::MainViewBase() :
 
     __background.setPosition(0, 0, 1024, 600);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-
-    backgroundBox.setPosition(0, 0, 1024, 600);
-    backgroundBox.setVisible(false);
-    backgroundBox.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-
-    counterBackgroundImage.setXY(487, 28);
-    counterBackgroundImage.setBitmap(touchgfx::Bitmap(BITMAP_COUNTER_BOX_ID));
 
     countTxt.setPosition(487, 50, 152, 89);
     countTxt.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
@@ -48,8 +41,6 @@ MainViewBase::MainViewBase() :
     button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
 
     add(__background);
-    add(backgroundBox);
-    add(counterBackgroundImage);
     add(countTxt);
     add(buttonDown);
     add(buttonUp);

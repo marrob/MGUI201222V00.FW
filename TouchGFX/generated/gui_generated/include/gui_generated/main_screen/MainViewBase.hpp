@@ -8,7 +8,6 @@
 #include <mvp/View.hpp>
 #include <gui/main_screen/MainPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/Image.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 #include <touchgfx/widgets/Button.hpp>
 #include <touchgfx/containers/progress_indicators/ImageProgress.hpp>
@@ -42,8 +41,6 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::Box backgroundBox;
-    touchgfx::Image counterBackgroundImage;
     touchgfx::TextAreaWithOneWildcard countTxt;
     touchgfx::Button buttonDown;
     touchgfx::Button buttonUp;

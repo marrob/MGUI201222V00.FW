@@ -5,22 +5,6 @@
         "Name": "Main",
         "Components": [
           {
-            "Type": "Box",
-            "Name": "backgroundBox",
-            "Width": 1024,
-            "Height": 600,
-            "Visible": false
-          },
-          {
-            "Type": "Image",
-            "Name": "counterBackgroundImage",
-            "X": 487,
-            "Y": 28,
-            "Width": 152,
-            "Height": 154,
-            "RelativeFilename": "counter_box.png"
-          },
-          {
             "Type": "TextArea",
             "Name": "countTxt",
             "X": 487,
