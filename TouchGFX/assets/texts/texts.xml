@@ -4,11 +4,105 @@
     <Text Id="TextId1" TypographyId="Default" Alignment="Center" Direction="LTR">
       <Translation Language="GB">&lt;number&gt;</Translation>
     </Text>
-    <Text Id="__SingleUse_J4RQ" TypographyId="Default" Alignment="Left" Direction="LTR">
-      <Translation Language="GB">0</Translation>
+    <Text Id="__SingleUse_GOXD" TypographyId="Desc" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">FORMAT</Translation>
+    </Text>
+    <Text Id="__SingleUse_8EJL" TypographyId="Value" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">&lt;value&gt;</Translation>
+    </Text>
+    <Text Id="__SingleUse_7PO6" TypographyId="Desc" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">DEPTH</Translation>
+    </Text>
+    <Text Id="__SingleUse_J9QW" TypographyId="Value" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">&lt;value&gt;</Translation>
+    </Text>
+    <Text Id="__SingleUse_LPXD" TypographyId="Desc" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">FREQ</Translation>
+    </Text>
+    <Text Id="__SingleUse_YD6A" TypographyId="Value" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">&lt;value&gt;</Translation>
+    </Text>
+    <Text Id="__SingleUse_C7U0" TypographyId="Desc" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">MCLK OUT: ON</Translation>
+    </Text>
+    <Text Id="__SingleUse_SPLI" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">Display</Translation>
+    </Text>
+    <Text Id="__SingleUse_VB1R" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">Settings&#10;</Translation>
+    </Text>
+    <Text Id="__SingleUse_IO3K" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">&lt;value&gt;</Translation>
+    </Text>
+    <Text Id="__SingleUse_WDG2" TypographyId="Default" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">Screen ON</Translation>
+    </Text>
+    <Text Id="__SingleUse_XWX2" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">BACK</Translation>
+    </Text>
+    <Text Id="__SingleUse_YPEX" TypographyId="Value" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">Karuna Settings</Translation>
+    </Text>
+    <Text Id="__SingleUse_AGOP" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Enable all output at startup.</Translation>
+    </Text>
+    <Text Id="__SingleUse_9IH2" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Last output state at startup.</Translation>
+    </Text>
+    <Text Id="__SingleUse_4E2A" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Enable MasterClock Out on I2S output.</Translation>
+    </Text>
+    <Text Id="__SingleUse_GIYT" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">BACK</Translation>
+    </Text>
+    <Text Id="__SingleUse_6WFO" TypographyId="Value" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">Display Settings</Translation>
+    </Text>
+    <Text Id="__SingleUse_BX5F" TypographyId="Default" Alignment="Right" Direction="LTR">
+      <Translation Language="GB">SCREEN OFF</Translation>
+    </Text>
+    <Text Id="__SingleUse_L22C" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Set display auto sleep Time &#10;.</Translation>
+    </Text>
+    <Text Id="__SingleUse_7ZX9" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Off timer</Translation>
+    </Text>
+    <Text Id="__SingleUse_HAQR" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">1 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_KFWO" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">5 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_7E5B" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">10 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_J0VM" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">30 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_KJC4" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">60 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_AQQB" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">120 min</Translation>
+    </Text>
+    <Text Id="__SingleUse_4TRH" TypographyId="Default" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">128</Translation>
+    </Text>
+    <Text Id="__SingleUse_ZC4G" TypographyId="Value" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">32 bit</Translation>
+    </Text>
+    <Text Id="__SingleUse_3FKW" TypographyId="Value" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">358.2 kHz</Translation>
+    </Text>
+    <Text Id="__SingleUse_G2P3" TypographyId="Value" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">DoP</Translation>
     </Text>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="Asap-Regular.ttf" Size="80" Bpp="4" WildcardCharacterRanges="0-9" />
+    <Typography Id="Default" Font="Asap-Regular.ttf" Size="40" Bpp="4" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Desc" Font="micross.ttf" Size="25" Bpp="4" FallbackCharacter="?" />
+    <Typography Id="Value" Font="micross.ttf" Size="65" Bpp="4" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Settings" Font="corbell.ttf" Size="30" Bpp="4" FallbackCharacter="?" />
+    <Typography Id="Typography_00" Font="consola.ttf" Size="70" Bpp="4" FallbackCharacter="?" />
   </Typographies>
 </TextDatabase>

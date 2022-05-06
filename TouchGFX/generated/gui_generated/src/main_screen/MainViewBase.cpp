@@ -3,49 +3,228 @@
 /*********************************************************************************/
 #include <gui_generated/main_screen/MainViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <texts/TextKeysAndLanguages.hpp>
 #include <BitmapDatabase.hpp>
+#include <texts/TextKeysAndLanguages.hpp>
+#include <touchgfx/canvas_widget_renderer/CanvasWidgetRenderer.hpp>
+
 
 MainViewBase::MainViewBase() :
-    buttonCallback(this, &MainViewBase::buttonCallbackHandler)
+    flexButtonCallback(this, &MainViewBase::flexButtonCallbackHandler)
 {
+
+    touchgfx::CanvasWidgetRenderer::setupBuffer(canvasBuffer, CANVAS_BUFFER_SIZE);
 
     __background.setPosition(0, 0, 1024, 600);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
 
-    countTxt.setPosition(487, 50, 152, 89);
-    countTxt.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    countTxt.setLinespacing(0);
-    Unicode::snprintf(countTxtBuffer, COUNTTXT_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_J4RQ).getText());
-    countTxt.setWildcard(countTxtBuffer);
-    countTxt.setTypedText(touchgfx::TypedText(T_TEXTID1));
+    box1.setPosition(0, -2, 1024, 600);
+    box1.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
 
-    buttonDown.setXY(868, 506);
-    buttonDown.setBitmaps(touchgfx::Bitmap(BITMAP_DOWN_BTN_ID), touchgfx::Bitmap(BITMAP_DOWN_BTN_PRESSED_ID));
-    buttonDown.setAction(buttonCallback);
+    btnHDMI.setBoxWithBorderPosition(0, 0, 80, 80);
+    btnHDMI.setBorderSize(0);
+    btnHDMI.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(150, 118, 73), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnHDMI.setBitmaps(Bitmap(BITMAP_HDMI_80X80_FB_ID), Bitmap(BITMAP_HDMI_80X80_S_ID));
+    btnHDMI.setBitmapXY(0, 0);
+    btnHDMI.setPosition(10, 10, 80, 80);
+    btnHDMI.setAction(flexButtonCallback);
 
-    buttonUp.setXY(133, 506);
-    buttonUp.setBitmaps(touchgfx::Bitmap(BITMAP_UP_BTN_ID), touchgfx::Bitmap(BITMAP_UP_BTN_PRESSED_ID));
-    buttonUp.setAction(buttonCallback);
+    btnRCA.setBoxWithBorderPosition(0, 0, 80, 80);
+    btnRCA.setBorderSize(0);
+    btnRCA.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 0, 0), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnRCA.setBitmaps(Bitmap(BITMAP_RCA_80X80_S_ID), Bitmap(BITMAP_RCA_80X80_S_ID));
+    btnRCA.setBitmapXY(0, 0);
+    btnRCA.setPosition(100, 10, 80, 80);
+    btnRCA.setAction(flexButtonCallback);
 
-    imageProgress2.setXY(361, 209);
-    imageProgress2.setProgressIndicatorPosition(2, 2, 400, 30);
-    imageProgress2.setRange(0, 100);
-    imageProgress2.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
-    imageProgress2.setBackground(touchgfx::Bitmap(BITMAP_BLUE_PROGRESSINDICATORS_BG_LARGE_PROGRESS_INDICATOR_BG_SQUARE_0_DEGREES_ID));
-    imageProgress2.setBitmap(BITMAP_BLUE_PROGRESSINDICATORS_FILL_TILING_PROGRESS_INDICATOR_FILL_STRIPED_WIDE_HORIZONTAL_ID);
-    imageProgress2.setValue(60);
-    imageProgress2.setAnchorAtZero(false);
+    btnBNC.setBoxWithBorderPosition(0, 0, 80, 80);
+    btnBNC.setBorderSize(1);
+    btnBNC.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(150, 118, 73), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnBNC.setBitmaps(Bitmap(BITMAP_BNC_80X80_FB_ID), Bitmap(BITMAP_BNC_80X80_FB_ID));
+    btnBNC.setBitmapXY(0, 0);
+    btnBNC.setPosition(190, 10, 80, 80);
+    btnBNC.setAction(flexButtonCallback);
 
-    button1.setXY(104, 152);
-    button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
+    btnXLR.setBoxWithBorderPosition(0, 0, 80, 80);
+    btnXLR.setBorderSize(0);
+    btnXLR.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(150, 118, 73), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnXLR.setBitmaps(Bitmap(BITMAP_XLR_80X80_FB_ID), Bitmap(BITMAP_XLR_80X80_FB_ID));
+    btnXLR.setBitmapXY(0, 0);
+    btnXLR.setPosition(280, 10, 80, 80);
+    btnXLR.setAction(flexButtonCallback);
+
+    boxWithBorder1.setPosition(5, 100, 1014, 400);
+    boxWithBorder1.setColor(touchgfx::Color::getColorFromRGB(25, 25, 25));
+    boxWithBorder1.setBorderColor(touchgfx::Color::getColorFromRGB(100, 100, 100));
+    boxWithBorder1.setBorderSize(1);
+
+    containerFormat.setPosition(32, 100, 338, 400);
+
+    lblDescFormat.setPosition(15, 13, 323, 29);
+    lblDescFormat.setColor(touchgfx::Color::getColorFromRGB(100, 100, 100));
+    lblDescFormat.setLinespacing(0);
+    lblDescFormat.setTypedText(touchgfx::TypedText(T___SINGLEUSE_GOXD));
+    containerFormat.add(lblDescFormat);
+
+    lblValueFormat.setPosition(15, 168, 323, 73);
+    lblValueFormat.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    lblValueFormat.setLinespacing(0);
+    Unicode::snprintf(lblValueFormatBuffer, LBLVALUEFORMAT_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_G2P3).getText());
+    lblValueFormat.setWildcard(lblValueFormatBuffer);
+    lblValueFormat.setTypedText(touchgfx::TypedText(T___SINGLEUSE_8EJL));
+    containerFormat.add(lblValueFormat);
+
+    lblMCLKON.setPosition(15, 360, 323, 31);
+    lblMCLKON.setColor(touchgfx::Color::getColorFromRGB(100, 100, 100));
+    lblMCLKON.setLinespacing(0);
+    lblMCLKON.setTypedText(touchgfx::TypedText(T___SINGLEUSE_C7U0));
+    containerFormat.add(lblMCLKON);
+
+    lblDSDValue.setPosition(85, 228, 162, 72);
+    lblDSDValue.setVisible(false);
+    lblDSDValue.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    lblDSDValue.setLinespacing(0);
+    Unicode::snprintf(lblDSDValueBuffer, LBLDSDVALUE_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_4TRH).getText());
+    lblDSDValue.setWildcard(lblDSDValueBuffer);
+    lblDSDValue.setTypedText(touchgfx::TypedText(T___SINGLEUSE_IO3K));
+    containerFormat.add(lblDSDValue);
+
+    containerBitDepth.setPosition(343, 100, 338, 400);
+
+    lblDescBitDepth.setPosition(15, 13, 323, 29);
+    lblDescBitDepth.setColor(touchgfx::Color::getColorFromRGB(100, 100, 100));
+    lblDescBitDepth.setLinespacing(0);
+    lblDescBitDepth.setTypedText(touchgfx::TypedText(T___SINGLEUSE_7PO6));
+    containerBitDepth.add(lblDescBitDepth);
+
+    lblValueBitDepth.setPosition(15, 167, 323, 74);
+    lblValueBitDepth.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    lblValueBitDepth.setLinespacing(0);
+    Unicode::snprintf(lblValueBitDepthBuffer, LBLVALUEBITDEPTH_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_ZC4G).getText());
+    lblValueBitDepth.setWildcard(lblValueBitDepthBuffer);
+    lblValueBitDepth.setTypedText(touchgfx::TypedText(T___SINGLEUSE_J9QW));
+    containerBitDepth.add(lblValueBitDepth);
+
+    containerFreq.setPosition(642, 100, 338, 400);
+
+    lblDescFreq.setPosition(15, 13, 323, 29);
+    lblDescFreq.setColor(touchgfx::Color::getColorFromRGB(100, 100, 100));
+    lblDescFreq.setLinespacing(0);
+    lblDescFreq.setTypedText(touchgfx::TypedText(T___SINGLEUSE_LPXD));
+    containerFreq.add(lblDescFreq);
+
+    lblValueFreq.setPosition(15, 167, 323, 74);
+    lblValueFreq.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    lblValueFreq.setLinespacing(0);
+    Unicode::snprintf(lblValueFreqBuffer, LBLVALUEFREQ_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_3FKW).getText());
+    lblValueFreq.setWildcard(lblValueFreqBuffer);
+    lblValueFreq.setTypedText(touchgfx::TypedText(T___SINGLEUSE_YD6A));
+    containerFreq.add(lblValueFreq);
+
+    box22.setPosition(749, 5, 90, 90);
+    box22.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    box22.setBorderColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    box22.setBorderSize(5);
+
+    img22.setBitmap(touchgfx::Bitmap(BITMAP_CLOCK22_80X80_I_ID));
+    img22.setPosition(749, 5, 90, 90);
+    img22.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+
+    box24.setPosition(659, 5, 90, 90);
+    box24.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    box24.setBorderColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    box24.setBorderSize(5);
+
+    img24.setBitmap(touchgfx::Bitmap(BITMAP_CLOCK240_80X80_I_ID));
+    img24.setPosition(659, 5, 90, 90);
+    img24.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+
+    box245.setPosition(839, 5, 90, 90);
+    box245.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    box245.setBorderColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    box245.setBorderSize(5);
+
+    img245.setBitmap(touchgfx::Bitmap(BITMAP_CLOCK245_80X80_I_ID));
+    img245.setPosition(839, 5, 90, 90);
+    img245.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+
+    boxIntExt.setPosition(929, 5, 90, 90);
+    boxIntExt.setColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    boxIntExt.setBorderColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    boxIntExt.setBorderSize(5);
+
+    imgIntExt.setBitmap(touchgfx::Bitmap(BITMAP_CLOCKEXT_80X80_I_ID));
+    imgIntExt.setPosition(929, 5, 90, 90);
+    imgIntExt.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+
+    btnSettings.setBoxWithBorderPosition(0, 0, 500, 90);
+    btnSettings.setBorderSize(1);
+    btnSettings.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 0, 0), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnSettings.setBitmaps(Bitmap(BITMAP_SETTINGS_ID), Bitmap(BITMAP_SETTINGS_ID));
+    btnSettings.setBitmapXY(15, 5);
+    btnSettings.setText(TypedText(T___SINGLEUSE_VB1R));
+    btnSettings.setTextPosition(-20, 20, 500, 90);
+    btnSettings.setTextColors(touchgfx::Color::getColorFromRGB(150, 118, 73), touchgfx::Color::getColorFromRGB(64, 64, 64));
+    btnSettings.setPosition(5, 505, 500, 90);
+    btnSettings.setAction(flexButtonCallback);
+
+    btnDisplay.setBoxWithBorderPosition(0, 0, 500, 90);
+    btnDisplay.setBorderSize(1);
+    btnDisplay.setBoxWithBorderColors(touchgfx::Color::getColorFromRGB(0, 0, 0), touchgfx::Color::getColorFromRGB(32, 32, 32), touchgfx::Color::getColorFromRGB(100, 100, 100), touchgfx::Color::getColorFromRGB(100, 100, 100));
+    btnDisplay.setBitmaps(Bitmap(BITMAP_DISPLAY_ID), Bitmap(BITMAP_DISPLAY_ID));
+    btnDisplay.setBitmapXY(20, 5);
+    btnDisplay.setText(TypedText(T___SINGLEUSE_SPLI));
+    btnDisplay.setTextPosition(-20, 20, 500, 90);
+    btnDisplay.setTextColors(touchgfx::Color::getColorFromRGB(150, 118, 73), touchgfx::Color::getColorFromRGB(64, 64, 64));
+    btnDisplay.setPosition(519, 505, 500, 90);
+    btnDisplay.setAction(flexButtonCallback);
+
+    circTemp1.setPosition(427, 25, 50, 50);
+    circTemp1.setCenter(25, 25);
+    circTemp1.setRadius(25);
+    circTemp1.setLineWidth(0);
+    circTemp1.setArc(0, 360);
+    circTemp1Painter.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    circTemp1.setPainter(circTemp1Painter);
+
+    circTemp2.setPosition(487, 25, 50, 50);
+    circTemp2.setCenter(25, 25);
+    circTemp2.setRadius(25);
+    circTemp2.setLineWidth(0);
+    circTemp2.setArc(0, 360);
+    circTemp2Painter.setColor(touchgfx::Color::getColorFromRGB(150, 118, 73));
+    circTemp2.setPainter(circTemp2Painter);
+
+    circTemp3.setPosition(547, 25, 50, 50);
+    circTemp3.setCenter(25, 25);
+    circTemp3.setRadius(25);
+    circTemp3.setLineWidth(0);
+    circTemp3.setArc(0, 360);
+    circTemp3Painter.setColor(touchgfx::Color::getColorFromRGB(64, 64, 64));
+    circTemp3.setPainter(circTemp3Painter);
 
     add(__background);
-    add(countTxt);
-    add(buttonDown);
-    add(buttonUp);
-    add(imageProgress2);
-    add(button1);
+    add(box1);
+    add(btnHDMI);
+    add(btnRCA);
+    add(btnBNC);
+    add(btnXLR);
+    add(boxWithBorder1);
+    add(containerFormat);
+    add(containerBitDepth);
+    add(containerFreq);
+    add(box22);
+    add(img22);
+    add(box24);
+    add(img24);
+    add(box245);
+    add(img245);
+    add(boxIntExt);
+    add(imgIntExt);
+    add(btnSettings);
+    add(btnDisplay);
+    add(circTemp1);
+    add(circTemp2);
+    add(circTemp3);
 }
 
 void MainViewBase::setupScreen()
@@ -53,20 +232,48 @@ void MainViewBase::setupScreen()
 
 }
 
-void MainViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+void MainViewBase::flexButtonCallbackHandler(const touchgfx::AbstractButtonContainer& src)
 {
-    if (&src == &buttonDown)
+    if (&src == &btnHDMI)
     {
-        //DecreaseValue
-        //When buttonDown clicked call virtual function
-        //Call decreaseValue
-        decreaseValue();
+        //ToggleHDMI
+        //When btnHDMI clicked call virtual function
+        //Call ToggleHDMI
+        ToggleHDMI();
     }
-    else if (&src == &buttonUp)
+    else if (&src == &btnRCA)
     {
-        //IncreaseValue
-        //When buttonUp clicked call virtual function
-        //Call increaseValue
-        increaseValue();
+        //ToggleRCA
+        //When btnRCA clicked call virtual function
+        //Call ToggleRCA
+        ToggleRCA();
+    }
+    else if (&src == &btnBNC)
+    {
+        //ToggleBNC
+        //When btnBNC clicked call virtual function
+        //Call ToggleBNC
+        ToggleBNC();
+    }
+    else if (&src == &btnXLR)
+    {
+        //ToggleXLR
+        //When btnXLR clicked call virtual function
+        //Call ToggleXLR
+        ToggleXLR();
+    }
+    else if (&src == &btnSettings)
+    {
+        //ShowSettings
+        //When btnSettings clicked change screen to SettingsScreen
+        //Go to SettingsScreen with screen transition towards East
+        application().gotoSettingsScreenScreenSlideTransitionEast();
+    }
+    else if (&src == &btnDisplay)
+    {
+        //ShowDipslay
+        //When btnDisplay clicked change screen to DisplayScreen
+        //Go to DisplayScreen with screen transition towards East
+        application().gotoDisplayScreenScreenSlideTransitionEast();
     }
 }

@@ -8,15 +8,39 @@ class MainView : public MainViewBase
 {
 public:
     MainView();
+    void SetOnAllOutput();
     virtual ~MainView() {}
     virtual void setupScreen();
-    virtual void tearDownScreen();
+    virtual void ToggleHDMI();
+    virtual  void ToggleRCA();
+    virtual  void ToggleBNC();
+    virtual  void ToggleXLR();
 
-    virtual void increaseValue();
-    virtual void decreaseValue();
+    void RefreshBNCOutput();
+    void RefreshRCAOutput();    
+    void RefreshHDMIOutput();
+    void RefreshXLROutput();
 
-    void setCount(uint8_t countValue);
-    void setLimitEffects(bool belowUpper, bool aboveLower);
+    void Refresh24Thermal();
+    void Refresh245Thermal();
+    void Refresh22Thermal();
+    void RefreshIntExt();
+
+    void SetDSDPCM(int p_AudiFormat);
+    void SetBitDepth(int p_AudiFormat);
+    void SetFreq(int p_AudiFormat);
+
+    void SetTemp(int p_Temp);
+    void PaintDot(colortype p_Dot1, colortype p_Dot2, colortype p_Dot3);
+
+    colortype GetOutputColor(bool p_State);
+    colortype GetThermalColor(bool p_State);
+    bool ToBinary(int number, int p_Position);
+    
+    virtual void OpenScreenoff();
+    virtual void ShowDipslay();
+     
+    void setCount(uint8_t countValue); 
 
 protected:
 

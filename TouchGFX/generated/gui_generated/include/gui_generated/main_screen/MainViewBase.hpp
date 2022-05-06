@@ -8,9 +8,14 @@
 #include <mvp/View.hpp>
 #include <gui/main_screen/MainPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
+#include <touchgfx/containers/buttons/Buttons.hpp>
+#include <touchgfx/widgets/BoxWithBorder.hpp>
+#include <touchgfx/containers/Container.hpp>
+#include <touchgfx/widgets/TextArea.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
-#include <touchgfx/widgets/Button.hpp>
-#include <touchgfx/containers/progress_indicators/ImageProgress.hpp>
+#include <touchgfx/widgets/ScalableImage.hpp>
+#include <touchgfx/widgets/canvas/Circle.hpp>
+#include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 
 class MainViewBase : public touchgfx::View<MainPresenter>
 {
@@ -22,12 +27,22 @@ public:
     /*
      * Virtual Action Handlers
      */
-    virtual void increaseValue()
+    virtual void ToggleHDMI()
     {
         // Override and implement this function in Main
     }
 
-    virtual void decreaseValue()
+    virtual void ToggleXLR()
+    {
+        // Override and implement this function in Main
+    }
+
+    virtual void ToggleBNC()
+    {
+        // Override and implement this function in Main
+    }
+
+    virtual void ToggleRCA()
     {
         // Override and implement this function in Main
     }
@@ -41,30 +56,69 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::TextAreaWithOneWildcard countTxt;
-    touchgfx::Button buttonDown;
-    touchgfx::Button buttonUp;
-    touchgfx::ImageProgress imageProgress2;
-    touchgfx::Button button1;
+    touchgfx::Box box1;
+    touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > btnHDMI;
+    touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > btnRCA;
+    touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > btnBNC;
+    touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > btnXLR;
+    touchgfx::BoxWithBorder boxWithBorder1;
+    touchgfx::Container containerFormat;
+    touchgfx::TextArea lblDescFormat;
+    touchgfx::TextAreaWithOneWildcard lblValueFormat;
+    touchgfx::TextArea lblMCLKON;
+    touchgfx::TextAreaWithOneWildcard lblDSDValue;
+    touchgfx::Container containerBitDepth;
+    touchgfx::TextArea lblDescBitDepth;
+    touchgfx::TextAreaWithOneWildcard lblValueBitDepth;
+    touchgfx::Container containerFreq;
+    touchgfx::TextArea lblDescFreq;
+    touchgfx::TextAreaWithOneWildcard lblValueFreq;
+    touchgfx::BoxWithBorder box22;
+    touchgfx::ScalableImage img22;
+    touchgfx::BoxWithBorder box24;
+    touchgfx::ScalableImage img24;
+    touchgfx::BoxWithBorder box245;
+    touchgfx::ScalableImage img245;
+    touchgfx::BoxWithBorder boxIntExt;
+    touchgfx::ScalableImage imgIntExt;
+    touchgfx::TextButtonStyle< touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > > btnSettings;
+    touchgfx::TextButtonStyle< touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ClickButtonTrigger > > > btnDisplay;
+    touchgfx::Circle circTemp1;
+    touchgfx::PainterRGB565 circTemp1Painter;
+    touchgfx::Circle circTemp2;
+    touchgfx::PainterRGB565 circTemp2Painter;
+    touchgfx::Circle circTemp3;
+    touchgfx::PainterRGB565 circTemp3Painter;
 
     /*
      * Wildcard Buffers
      */
-    static const uint16_t COUNTTXT_SIZE = 3;
-    touchgfx::Unicode::UnicodeChar countTxtBuffer[COUNTTXT_SIZE];
+    static const uint16_t LBLVALUEFORMAT_SIZE = 10;
+    touchgfx::Unicode::UnicodeChar lblValueFormatBuffer[LBLVALUEFORMAT_SIZE];
+    static const uint16_t LBLDSDVALUE_SIZE = 10;
+    touchgfx::Unicode::UnicodeChar lblDSDValueBuffer[LBLDSDVALUE_SIZE];
+    static const uint16_t LBLVALUEBITDEPTH_SIZE = 10;
+    touchgfx::Unicode::UnicodeChar lblValueBitDepthBuffer[LBLVALUEBITDEPTH_SIZE];
+    static const uint16_t LBLVALUEFREQ_SIZE = 10;
+    touchgfx::Unicode::UnicodeChar lblValueFreqBuffer[LBLVALUEFREQ_SIZE];
 
 private:
 
     /*
      * Callback Declarations
      */
-    touchgfx::Callback<MainViewBase, const touchgfx::AbstractButton&> buttonCallback;
+    touchgfx::Callback<MainViewBase, const touchgfx::AbstractButtonContainer&> flexButtonCallback;
 
     /*
      * Callback Handler Declarations
      */
-    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
+    void flexButtonCallbackHandler(const touchgfx::AbstractButtonContainer& src);
 
+    /*
+     * Canvas Buffer Size
+     */
+    static const uint16_t CANVAS_BUFFER_SIZE = 15360;
+    uint8_t canvasBuffer[CANVAS_BUFFER_SIZE];
 };
 
 #endif // MAINVIEWBASE_HPP

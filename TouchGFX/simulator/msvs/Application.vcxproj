@@ -24,6 +24,15 @@
     <ClCompile Include="..\..\generated\gui_generated\src\main_screen\MainViewBase.cpp"/>
     <ClCompile Include="..\..\gui\src\model\Model.cpp"/>
     <ClCompile Include="..\..\generated\simulator\src\video\SoftwareMJPEGDecoder.cpp"/>
+    <ClCompile Include="..\..\gui\src\offscreen_screen\OffScreenPresenter.cpp"/>
+    <ClCompile Include="..\..\gui\src\offscreen_screen\OffScreenView.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\offscreen_screen\OffScreenViewBase.cpp"/>
+    <ClCompile Include="..\..\gui\src\settingsscreen_screen\SettingsScreenPresenter.cpp"/>
+    <ClCompile Include="..\..\gui\src\settingsscreen_screen\SettingsScreenView.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\settingsscreen_screen\SettingsScreenViewBase.cpp"/>
+    <ClCompile Include="..\..\gui\src\displayscreen_screen\DisplayScreenPresenter.cpp"/>
+    <ClCompile Include="..\..\gui\src\displayscreen_screen\DisplayScreenView.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\displayscreen_screen\DisplayScreenViewBase.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ApplicationRoot)\assets\texts\texts.xlsx"/>
@@ -177,6 +186,15 @@
     <ClInclude Include="..\..\generated\simulator\include\simulator\video\DirectFrameBufferVideoController.hpp"/>
     <ClInclude Include="..\..\generated\simulator\include\simulator\video\MJPEGDecoder.hpp"/>
     <ClInclude Include="..\..\generated\simulator\include\simulator\video\SoftwareMJPEGDecoder.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\offscreen_screen\OffScreenPresenter.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\offscreen_screen\OffScreenView.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\offscreen_screen\OffScreenViewBase.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\settingsscreen_screen\SettingsScreenPresenter.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\settingsscreen_screen\SettingsScreenView.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\settingsscreen_screen\SettingsScreenViewBase.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\displayscreen_screen\DisplayScreenPresenter.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\displayscreen_screen\DisplayScreenView.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\displayscreen_screen\DisplayScreenViewBase.hpp"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="$(ApplicationRoot)\generated\simulator\touchgfx.rc"/>
@@ -185,19 +203,21 @@
     <ProjectGuid>{3C47683C-0505-487F-A1FD-75B8490BF72C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Application</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
   <ImportGroup Label="ExtensionSettings">

@@ -18,6 +18,17 @@ public:
     // Main
     void gotoMainScreenNoTransition();
 
+    void gotoMainScreenSlideTransitionWest();
+
+    // OffScreen
+    void gotoOffScreenScreenSlideTransitionWest();
+
+    // SettingsScreen
+    void gotoSettingsScreenScreenSlideTransitionEast();
+
+    // DisplayScreen
+    void gotoDisplayScreenScreenSlideTransitionEast();
+
 protected:
     touchgfx::Callback<FrontendApplicationBase> transitionCallback;
     FrontendHeap& frontendHeap;
@@ -25,6 +36,17 @@ protected:
 
     // Main
     void gotoMainScreenNoTransitionImpl();
+
+    void gotoMainScreenSlideTransitionWestImpl();
+
+    // OffScreen
+    void gotoOffScreenScreenSlideTransitionWestImpl();
+
+    // SettingsScreen
+    void gotoSettingsScreenScreenSlideTransitionEastImpl();
+
+    // DisplayScreen
+    void gotoDisplayScreenScreenSlideTransitionEastImpl();
 };
 
 #endif // FRONTENDAPPLICATIONBASE_HPP
