@@ -35,10 +35,8 @@ void TouchGFXHAL::initialize()
     // To overwrite the generated implementation, omit call to parent function
     // and implemented needed functionality here.
     // Please note, HAL::initialize() must be called to initialize the framework.
-
     TouchGFXGeneratedHAL::initialize();
-    //setFrameBufferStartAddresses((void*)0xD0000000, (void*)0xD003FC00, (void*)0xD007F800);  //enable the animation storage to allow slide animations
-    setFrameBufferStartAddresses((void*)0xD0000000, (void*)0, (void*)0);  //enable the animation storage to allow slide animations
+    setFrameBufferStartAddresses((void*)0xD0000000, (void*)0xD012C000, (void*)0xD0258000);  //enable the animation storage to allow slide animations
     lockDMAToFrontPorch(false);
     instrumentation.init();
     setMCUInstrumentation(&instrumentation);

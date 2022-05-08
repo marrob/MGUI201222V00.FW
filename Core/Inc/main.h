@@ -50,6 +50,9 @@ extern I2C_HandleTypeDef hi2c2;
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 
+
+
+
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
@@ -58,6 +61,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+
+extern void init_app_cpp_domain(void);
 
 /* USER CODE END EFP */
 
