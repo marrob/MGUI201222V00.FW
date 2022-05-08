@@ -14,7 +14,14 @@
       <ProjectName>MGUI201222V00.FW</ProjectName>
       <ProjectNature>Cpp</ProjectNature>
       <Secure/>
-      <filestoremove/>
+      <filestoremove>
+        <file>
+          <name>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c</name>
+        </file>
+        <file>
+          <name>..\Src\stm32f746i.c</name>
+        </file>
+      </filestoremove>
       <configs>
         <config>
           <name>MGUI201222V00.FW</name>
@@ -53,7 +60,7 @@
             <include>Drivers\STM32F7xx_HAL_Driver\Inc</include>
             <include>Drivers\STM32F7xx_HAL_Driver\Inc\Legacy</include>
             <include>Middlewares\Third_Party\FreeRTOS\Source\include</include>
-            <include>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2</include>
             <include>Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM7\r0p1</include>
             <include>Drivers\CMSIS\Device\ST\STM32F7xx\Include</include>
             <include>Drivers\CMSIS\Include</include>
@@ -105,7 +112,7 @@
               <name>Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
             </file>
             <file>
-              <name>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c</name>
+              <name>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.c</name>
             </file>
             <file>
               <name>Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.c</name>

@@ -64,6 +64,7 @@
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/images/include"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/texts/include"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/gui/include"/>
+                  <listOptionValue builtIn="false" value="../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/videos/include"/>
                 </option>
                 <inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.539436455" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
@@ -92,6 +93,7 @@
                   <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Device/ST/STM32F7xx/Include"/>
                   <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
                   <listOptionValue builtIn="false" value="../../Middlewares/ST/touchgfx/framework/include"/>
+                  <listOptionValue builtIn="false" value="../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/fonts/include"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/gui_generated/include"/>
                   <listOptionValue builtIn="false" value="../../TouchGFX/generated/images/include"/>

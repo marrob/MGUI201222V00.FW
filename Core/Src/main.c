@@ -83,7 +83,13 @@ UART_HandleTypeDef huart2;
 
 SDRAM_HandleTypeDef hsdram1;
 
-osThreadId defaultTaskHandle;
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 8192 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 LiveLED_HnadleTypeDef hLiveLed;
@@ -102,7 +108,7 @@ static void MX_I2C2_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -189,6 +195,9 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -206,14 +215,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 8192);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   Console_Write("FreeRTOS osKernelStart()");
   /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -901,7 +913,7 @@ void LCD_Disable(){
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   MX_TouchGFX_Process();

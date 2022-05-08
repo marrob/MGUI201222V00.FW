@@ -231,7 +231,7 @@
 		<link>
 			<name>Middlewares/FreeRTOS/cmsis_os.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c</locationURI>
 		</link>
 		<link>
 			<name>Middlewares/FreeRTOS/croutine.c</name>
