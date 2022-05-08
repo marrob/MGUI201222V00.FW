@@ -23,6 +23,13 @@ bool mIsIntExt;
 int mTemp;
 int mAudioFormat;
 
+#ifndef SIMULATOR
+  extern "C"
+  {
+	  void SayHelloWorld(uint8_t p);
+  }
+#endif
+
 MainView::MainView()
 {
 	// Support of larger displays for this example
@@ -96,6 +103,7 @@ void MainView::setupScreen()
 
 void MainView::RefreshHDMIOutput()
 {
+
 	btnHDMI.setBoxWithBorderColors(GetOutputColor(mIsHdmiON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsHdmiON)
 	{
@@ -237,7 +245,7 @@ void MainView::PaintDot(colortype p_Dot1, colortype p_Dot2, colortype p_Dot3)
 //SET AUDIO VALUE
 
 /// <summary>
-/// DSD_PCM , SEL_3_ISO , SEL_2_ISO , SEL_1_ISO , SEL_0_ISO - 5 bites  információ
+/// DSD_PCM , SEL_3_ISO , SEL_2_ISO , SEL_1_ISO , SEL_0_ISO - 5 bites  informï¿½ciï¿½
 /// </summary>
 /// <param name="p_AudiFormat"></param>
 void  MainView::SetDSDPCM(int p_AudiFormat)
@@ -306,7 +314,7 @@ void  MainView::SetBitDepth(int p_AudiFormat)
 	{
 		Unicode::strncpy(lblValueBitDepthBuffer, "24 bit", 7);
 
-		//Ezt kell majd meghívni ha bebizonyosodott a bitdepth
+		//Ezt kell majd meghï¿½vni ha bebizonyosodott a bitdepth
 
 		/*int BitDepth = p_AudiFormat >> 5;
 		BitDepth = BitDepth & 0b00000011;
@@ -437,7 +445,10 @@ void  MainView::SetFreq(int p_AudiFormat)
 
 void MainView::ToggleHDMI()
 {
-	mIsHdmiON = !mIsHdmiON;
+#ifndef SIMULATOR
+  SayHelloWorld(1);
+#endif
+  mIsHdmiON = !mIsHdmiON;
 	RefreshHDMIOutput();
 }
 

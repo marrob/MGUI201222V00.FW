@@ -120,7 +120,10 @@ void Console_Write(char *str);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void SayHelloWorld(uint8_t p)
+{
+  printf("Hello World");
+}
 /* USER CODE END 0 */
 
 /**
