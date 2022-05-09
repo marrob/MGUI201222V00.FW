@@ -28,6 +28,8 @@
 #include "string.h"
 #include "mx25.h"
 #include <stdio.h>
+#include <queue.h>
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -157,8 +159,9 @@ void LCD_Enable(void);
 
 
 
-void Console_Write(char *str);
+void ConsoleWrite(char *str);
 
+void UsbUartTx(char *str);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -207,12 +210,13 @@ int main(void)
   MX_FMC_Init();
   MX_LTDC_Init();
   MX_CRC_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_I2C2_Init();
   MX_QUADSPI_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
-  MX_DMA_Init();
+
   MX_TIM2_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
@@ -272,7 +276,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  Console_Write("FreeRTOS osKernelStart()");
+  //ConsoleWrite("FreeRTOS osKernelStart()");
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -719,7 +723,7 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-
+  HAL_UART_Receive_DMA (&huart1, (uint8_t*)HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -989,7 +993,7 @@ int _write(int file, char *ptr, int len)
 }
 */
 
-void Console_Write(char *str)
+void ConsoleWrite(char *str)
 {
   HAL_UART_Transmit(&huart1, (uint8_t*)str, strlen(str), 100);
 }
@@ -1170,6 +1174,29 @@ unsigned long getRunTimeCounterValue(void)
 {
   return RTOSRunTimeStatTick;
 }
+
+void UsbUartTx(char *str)
+{
+  char temp[80];
+  sprintf(temp, "%s\n",str);
+  HAL_UART_Transmit(&huart1, (uint8_t*)temp, strlen(temp), 100);
+}
+
+/* Display--------------------------------------------------------------------*/
+void SetDisplayOn()
+{
+  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_SET);
+}
+void SetDisplayOff()
+{
+  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_RESET);
+}
+
+uint8_t GetDisply(void)
+{
+  return HAL_GPIO_ReadPin(DISP_EN_GPIO_Port, DISP_EN_Pin) == GPIO_PIN_SET;
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -1208,24 +1235,6 @@ void Uart_Task(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-  }
-  /* USER CODE END Uart_Task */
-}
-
-/* USER CODE BEGIN Header_USBCmdParser_Task */
-/**
-* @brief Function implementing the USBCmdParserTas thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_USBCmdParser_Task */
-void USBCmdParser_Task(void *argument)
-{
-  /* USER CODE BEGIN USBCmdParser_Task */
-  /* Infinite loop */
-  for(;;)
-  {
     static uint32_t timestamp;
     static uint8_t startFlag;
     for(;;)
@@ -1245,7 +1254,7 @@ void USBCmdParser_Task(void *argument)
           {
             HOST_UART_RxBuffer[i] = 0;
             startFlag = 0;
-           // xQueueSend(USBUartRxQueueHandle, HOST_UART_RxBuffer, 0);
+            xQueueSend(USBUartRxQueueHandle, HOST_UART_RxBuffer, 0);
             HAL_UART_DMAStop(&huart1);
             memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
             HAL_UART_Receive_DMA(&huart1, (uint8_t*) HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
@@ -1281,6 +1290,161 @@ void USBCmdParser_Task(void *argument)
           }
         }
       }
+    }
+  }
+  /* USER CODE END Uart_Task */
+}
+
+/* USER CODE BEGIN Header_USBCmdParser_Task */
+/**
+* @brief Function implementing the USBCmdParserTas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_USBCmdParser_Task */
+void USBCmdParser_Task(void *argument)
+{
+  /* USER CODE BEGIN USBCmdParser_Task */
+  /* Infinite loop */
+  char request[HOST_UART_BUFFER_SIZE];
+  char response[HOST_UART_BUFFER_SIZE];
+  char cmd[20];
+  char arg1[10];
+  char arg2[10];
+  uint8_t params = 0;
+  /* Infinite loop */
+  for(;;)
+  {
+    Device.Diag.ParserTaskCounter++;
+    if(xQueueReceive(USBUartRxQueueHandle, (void*)&request, 0) == pdTRUE)
+    {
+
+      Device.Diag.HostUartTxCommandsCounter++;
+ #if sdfasdf
+      if(strlen(request) == 0)
+        return;
+
+      params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
+
+      if(params == 1)
+      {/*** parméter mentes utasitások ***/
+        if(!strcmp(cmd, "*OPC?"))
+        {
+          strcpy(response, "*OPC");
+        }
+        else if(!strcmp(cmd, "*RDY?"))
+        {
+          strcpy(response, "*RDY");
+        }
+        else if(!strcmp(cmd, "*WHOIS?"))
+        {
+          strcpy(response, DEVICE_NAME);
+        }
+        else if(!strcmp(cmd, "*VER?"))
+        {
+          strcpy(response, DEVICE_FW);
+        }
+        else if(!strcmp(cmd, "*UID?"))
+        {
+          sprintf(response, "%4lX%4lX%4lX",HAL_GetUIDw0(), HAL_GetUIDw1(), HAL_GetUIDw2());
+        }
+        else if(!strcmp(cmd,"UPTIME?"))
+        {
+          sprintf(response, "%lld", Device.Diag.UpTimeSec);
+        }
+        else if(!strcmp(cmd, "DIS:LIG?"))
+        {
+          sprintf(response, "%d", DisplayLightGet());
+        }
+//        else if(!strcmp(cmd, "LED:LIG?"))
+//        {
+//          sprintf(response, "%d", GetPowerLedLight());
+//        }
+        else if(!strcmp(cmd, "DIS?"))
+        {
+          sprintf(response, "%d",GetDisply()?1:0);
+        }
+        else if(!strcmp(cmd, "DIS:ON"))
+        {
+          SetDisplayOn();
+          strcpy(response, "RDY");
+        }
+        else if(!strcmp(cmd, "DIS:OFF"))
+        {
+          SetDisplayOff();
+          strcpy(response, "RDY");
+        }
+//        else if(!strcmp(cmd, "PSP:ON"))
+//        {
+//          SetPowerSupply(1);
+//          strcpy(response, "RDY");
+//        }
+//        else if(!strcmp(cmd, "PSP:OFF"))
+//        {
+//          SetPowerSupply(0);
+//          strcpy(response, "RDY");
+//        }
+//        else if(!strcmp(cmd, "PSP?"))
+//        {
+//          sprintf(response, "%d",GetPowerSupply()?1:0);
+//        }
+        else if(!strcmp(cmd, "DIG:INP:U16?"))
+        {
+          sprintf(response, "%04X",GetInputs());
+        }
+        else if(!strcmp(cmd, "DIG:OUT:U8?"))
+        {
+          sprintf(response, "%02X",GetOutputs());
+        }
+//        else if(!strcmp(cmd, "TEM:ARR?"))
+//        {
+//          sprintf(response, "%0.3f; %0.3f; %0.3f; %0.3f",
+//              Device.Temperature[0],
+//              Device.Temperature[1],
+//              Device.Temperature[2],
+//              Device.Temperature[3]);
+//        }
+        else
+        {
+          strcpy(response, "!UNKNOWN");
+        }
+      }
+
+      if(params == 2)
+      {/*** Paraméteres utasitások ***/
+        if(!strcmp(cmd, "DIS:LIG"))
+        {
+          DisplayLightSet(strtol(arg1, NULL, 0));
+          strcpy(response, "RDY");
+        }
+//        else if(!strcmp(cmd, "LED:LIG"))
+//        {
+//          PowerLedSetMaxLight(strtol(arg1, NULL, 0));
+//          strcpy(response, "RDY");
+//        }
+//        else if(!strcmp(cmd, "LED:PER"))
+//        {
+//          PowerLedSetUserPeriod(strtol(arg1, NULL, 0));
+//          strcpy(response, "RDY");
+//        }
+//        else if(!strcmp(cmd, "LED:DIM"))
+//        {
+//          PowerLedSetDimming(strtol(arg1, NULL, 0));
+//          strcpy(response, "RDY");
+//        }
+        else if(!strcmp(cmd, "DIG:OUT:SET:U8"))
+        {
+          uint8_t value = strtol(arg1, NULL, 16);
+          SetOutputs(value);
+          strcpy(response, "RDY");
+        }
+        else
+        {
+          strcpy(response, "!UNKNOWN");
+        }
+      }
+      #endif
+//      UsbUartTx(response);
     }
   }
   /* USER CODE END USBCmdParser_Task */

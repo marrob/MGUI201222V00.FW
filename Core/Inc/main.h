@@ -32,6 +32,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "vt100.h"
+#include "common.h"
 #include "DisplayLight.h"
 /* USER CODE END Includes */
 
@@ -63,13 +65,21 @@ typedef struct _AppTypeDef
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-extern I2C_HandleTypeDef hi2c2;
 
 
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
+
+#define DEVICE_NAME             "MGUI201222VA1-KARUNA"
+#define DEVICE_NAME_SIZE        sizeof(DEVICE_NAME)
+#define DEVICE_FW               "1.0.0.1"
+#define DEVICE_FW_SIZE          sizeof(DEVICE_FW)
+#define DEVICE_PCB              "00"
+#define DEVICE_PCB_SIZE         sizeof(DEVICE_PCB)
+#define DEVICE_MNF              "KONVOLUCIO"
+#define DEVICE_MNF_SIZE         sizeof(DEVICE_MNF)
 
 
 
