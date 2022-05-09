@@ -172,6 +172,7 @@ void ConsoleWrite(char *str);
 void UsbParser(char *request);
 void UsbUartTx(char *str);
 void BusParser(char *request);
+void BusUartTx(char *str);
 
 /* USER CODE END PFP */
 
@@ -1229,6 +1230,12 @@ void UsbUartTx(char *str)
   HAL_UART_Transmit(&huart1, (uint8_t*)temp, strlen(temp), 100);
 }
 
+void BusUartTx(char *str)
+{
+  char temp[80];
+  sprintf(temp, "%s\n",str);
+  HAL_UART_Transmit(&huart7, (uint8_t*)temp, strlen(temp), 100);
+}
 /* Display--------------------------------------------------------------------*/
 void SetDisplayOn()
 {
@@ -1557,6 +1564,7 @@ void LiveLedTask(void *argument)
         flag = 1;
         LiveLedOff();
         Device.Diag.UpTimeSec++;
+        BusUartTx("Test");
       }
     }
   }
