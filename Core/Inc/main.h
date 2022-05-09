@@ -41,16 +41,29 @@ extern "C" {
 /* USER CODE BEGIN ET */
 typedef struct _DiagTypeDef
 {
-  uint32_t HostUartRxCommandsCounter;
-  uint32_t HostUartTimeoutCounter;
-  uint32_t HostUartTxCommandsCounter;
-  uint32_t UartTaskCounter;
+  uint32_t BusUartRxCommandsCounter;
+  uint32_t UsbUartRxCommandsCounter;
+
+  uint32_t UsbUartTimeoutCounter;
+  uint32_t BusUartTimeoutCounter;
+
+  uint32_t BusUartTxCommandsCounter;
+
+  uint32_t UsbUartTaskCounter;
+  uint32_t BusUartTaskCounter;
+
+  uint32_t UsbUartOverrunErrorCounter;
+  uint32_t BusUartOverrunErrorCounter;
+
+  uint32_t UsbUartNoiseErrorCounter;
+  uint32_t BusUartNoiseErrorCounter;
+
+  uint32_t UsbUartFrameErrorCounter;
+  uint32_t BusUartFrameErrorCounter;
+
   uint32_t PowerOnOffTaskCounter;
   uint32_t PowerLedTaskCounter;
   uint64_t UpTimeSec;
-  uint32_t HostUartOverrunErrorCounter;
-  uint32_t HostUartNoiseErrorCounter;
-  uint32_t HostUartFrameErrorCounter;
 }Diag_t;
 
 typedef struct _AppTypeDef

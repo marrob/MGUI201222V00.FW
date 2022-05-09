@@ -103,10 +103,10 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 8192 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for UartTask */
-osThreadId_t UartTaskHandle;
-const osThreadAttr_t UartTask_attributes = {
-  .name = "UartTask",
+/* Definitions for UsbRx_Task */
+osThreadId_t UsbRx_TaskHandle;
+const osThreadAttr_t UsbRx_Task_attributes = {
+  .name = "UsbRx_Task",
   .stack_size = 8192 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -114,6 +114,13 @@ const osThreadAttr_t UartTask_attributes = {
 osThreadId_t LiveLed_TaskHandle;
 const osThreadAttr_t LiveLed_Task_attributes = {
   .name = "LiveLed_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for BusRx_Task */
+osThreadId_t BusRx_TaskHandle;
+const osThreadAttr_t BusRx_Task_attributes = {
+  .name = "BusRx_Task",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -149,8 +156,9 @@ static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_UART7_Init(void);
 void StartDefaultTask(void *argument);
-void Uart_Task(void *argument);
+void UsbRxTask(void *argument);
 void LiveLedTask(void *argument);
+void BusRxTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -161,8 +169,9 @@ void LiveLedOn(void);
 void LCD_Enable(void);
 
 void ConsoleWrite(char *str);
-void USBCmdParser(char *request);
+void UsbParser(char *request);
 void UsbUartTx(char *str);
+void BusParser(char *request);
 
 /* USER CODE END PFP */
 
@@ -263,11 +272,14 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of UartTask */
-  UartTaskHandle = osThreadNew(Uart_Task, NULL, &UartTask_attributes);
+  /* creation of UsbRx_Task */
+  UsbRx_TaskHandle = osThreadNew(UsbRxTask, NULL, &UsbRx_Task_attributes);
 
   /* creation of LiveLed_Task */
   LiveLed_TaskHandle = osThreadNew(LiveLedTask, NULL, &LiveLed_Task_attributes);
+
+  /* creation of BusRx_Task */
+  BusRx_TaskHandle = osThreadNew(BusRxTask, NULL, &BusRx_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1233,7 +1245,7 @@ uint8_t GetDisply(void)
 }
 
 
-void USBCmdParser(char *request)
+void UsbParser(char *request)
 {
   char response[UART_BUFFER_SIZE];
   char cmd[20];
@@ -1242,7 +1254,6 @@ void USBCmdParser(char *request)
   uint8_t params = 0;
   if(strlen(USB_UART_RxBuffer) !=0)
   {
-    Device.Diag.HostUartTxCommandsCounter++;
     params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
     if(params == 1)
     {/*** parameterless commands ***/
@@ -1364,6 +1375,72 @@ void USBCmdParser(char *request)
     UsbUartTx(response);
   }
 }
+
+void BusParser(char *request)
+{
+  char response[UART_BUFFER_SIZE];
+  char cmd[20];
+  char arg1[10];
+  char arg2[10];
+  uint8_t params = 0;
+  if(strlen(USB_UART_RxBuffer) !=0)
+  {
+    params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
+    if(params == 1)
+    {/*** parameterless commands ***/
+      if(!strcmp(cmd, "*OPC?"))
+      {
+        strcpy(response, "*OPC");
+      }
+      else if(!strcmp(cmd, "*RDY?"))
+      {
+        strcpy(response, "*RDY");
+      }
+      else if(!strcmp(cmd, "*WHOIS?"))
+      {
+        strcpy(response, DEVICE_NAME);
+      }
+      else if(!strcmp(cmd, "*VER?"))
+      {
+        strcpy(response, DEVICE_FW);
+      }
+      else if(!strcmp(cmd, "*UID?"))
+      {
+        sprintf(response, "%4lX%4lX%4lX",HAL_GetUIDw0(), HAL_GetUIDw1(), HAL_GetUIDw2());
+      }
+      else if(!strcmp(cmd,"UPTIME?"))
+      {
+        sprintf(response, "%lld", Device.Diag.UpTimeSec);
+      }
+      else if(!strcmp(cmd, "DIS:LIG?"))
+      {
+        sprintf(response, "%d", DisplayLightGet());
+      }
+      else
+      {
+        strcpy(response, "!UNKNOWN");
+      }
+    }
+    if(params == 2)
+    {/*** commands with parameters ***/
+      if(!strcmp(cmd, "DIS:LIG"))
+      {
+        DisplayLightSet(strtol(arg1, NULL, 0));
+        strcpy(response, "RDY");
+      }
+      else if(!strcmp(cmd, "DIG:OUT:SET:U8"))
+      {
+        uint8_t value = strtol(arg1, NULL, 16);
+        SetOutputs(value);
+        strcpy(response, "RDY");
+      }
+      else
+      {
+        strcpy(response, "!UNKNOWN");
+      }
+    }
+  }
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -1385,74 +1462,71 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_Uart_Task */
+/* USER CODE BEGIN Header_UsbRxTask */
 /**
-* @brief Function implementing the UartTask thread.
+* @brief Function implementing the UsbRx_Task thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_Uart_Task */
-void Uart_Task(void *argument)
+/* USER CODE END Header_UsbRxTask */
+void UsbRxTask(void *argument)
 {
-  /* USER CODE BEGIN Uart_Task */
+  /* USER CODE BEGIN UsbRxTask */
   /* Infinite loop */
+  static uint32_t timestamp;
+  static uint8_t startFlag;
   for(;;)
   {
-    static uint32_t timestamp;
-    static uint8_t startFlag;
-    for(;;)
+    Device.Diag.UsbUartTaskCounter++;
+    if(strlen(USB_UART_RxBuffer)!=0)
     {
-      Device.Diag.UartTaskCounter++;
-      if(strlen(USB_UART_RxBuffer)!=0)
+      if(!startFlag)
       {
-        if(!startFlag)
+        timestamp = HAL_GetTick();
+        startFlag = 1;
+      }
+      for(uint8_t i=0; i < UART_BUFFER_SIZE; i++)
+      {
+        if(USB_UART_RxBuffer[i]=='\n')
         {
-          timestamp = HAL_GetTick();
-          startFlag = 1;
+          USB_UART_RxBuffer[i] = 0;
+          startFlag = 0;
+          HAL_UART_DMAStop(&huart1);
+          UsbParser(USB_UART_RxBuffer);
+          memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
+          Device.Diag.UsbUartRxCommandsCounter ++;
         }
-        for(uint8_t i=0; i < UART_BUFFER_SIZE; i++)
+      }
+      if(startFlag)
+      {
+        if(HAL_GetTick() - timestamp > 500)
         {
-          if(USB_UART_RxBuffer[i]=='\n')
+          if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE))
           {
-            USB_UART_RxBuffer[i] = 0;
-            startFlag = 0;
-            HAL_UART_DMAStop(&huart1);
-            USBCmdParser(USB_UART_RxBuffer);
-            memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
-            Device.Diag.HostUartRxCommandsCounter ++;
+            Device.Diag.UsbUartOverrunErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart1,UART_CLEAR_OREF);
           }
-        }
-        if(startFlag)
-        {
-          if(HAL_GetTick() - timestamp > 500)
+          if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_NE))
           {
-            if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE))
-            {
-              Device.Diag.HostUartOverrunErrorCounter++;
-              __HAL_UART_CLEAR_FLAG(&huart1,UART_CLEAR_OREF);
-            }
-            if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_NE))
-            {
-              Device.Diag.HostUartNoiseErrorCounter++;
-              __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_NE);
-            }
-            if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_FE))
-            {
-              Device.Diag.HostUartFrameErrorCounter++;
-              __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_FE);
-            }
-            startFlag = 0;
-            HAL_UART_DMAStop(&huart1);
-            memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
-            Device.Diag.HostUartTimeoutCounter ++;
+            Device.Diag.UsbUartNoiseErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_NE);
           }
+          if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_FE))
+          {
+            Device.Diag.UsbUartFrameErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_FE);
+          }
+          startFlag = 0;
+          HAL_UART_DMAStop(&huart1);
+          memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
+          Device.Diag.UsbUartTimeoutCounter ++;
         }
       }
     }
   }
-  /* USER CODE END Uart_Task */
+  /* USER CODE END UsbRxTask */
 }
 
 /* USER CODE BEGIN Header_LiveLedTask */
@@ -1487,6 +1561,73 @@ void LiveLedTask(void *argument)
     }
   }
   /* USER CODE END LiveLedTask */
+}
+
+/* USER CODE BEGIN Header_BusRxTask */
+/**
+* @brief Function implementing the BusRx_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_BusRxTask */
+void BusRxTask(void *argument)
+{
+  /* USER CODE BEGIN BusRxTask */
+  /* Infinite loop */
+  static uint32_t timestamp;
+  static uint8_t startFlag;
+  for(;;)
+  {
+    Device.Diag.BusUartTaskCounter++;
+    if(strlen(BUS_UART_RxBuffer)!=0)
+    {
+      if(!startFlag)
+      {
+        timestamp = HAL_GetTick();
+        startFlag = 1;
+      }
+      for(uint8_t i=0; i < UART_BUFFER_SIZE; i++)
+      {
+        if(BUS_UART_RxBuffer[i]=='\n')
+        {
+          BUS_UART_RxBuffer[i] = 0;
+          startFlag = 0;
+          HAL_UART_DMAStop(&huart7);
+          //USBCmdParser(BUS_UART_RxBuffer);
+          memset(BUS_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart7, (uint8_t*) BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+          Device.Diag.BusUartRxCommandsCounter ++;
+        }
+      }
+      if(startFlag)
+      {
+        if(HAL_GetTick() - timestamp > 500)
+        {
+          if(__HAL_UART_GET_FLAG(&huart7, UART_FLAG_ORE))
+          {
+            Device.Diag.BusUartOverrunErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart7,UART_CLEAR_OREF);
+          }
+          if(__HAL_UART_GET_FLAG(&huart7, USART_ISR_NE))
+          {
+            Device.Diag.BusUartNoiseErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart7,USART_ISR_NE);
+          }
+          if(__HAL_UART_GET_FLAG(&huart7, USART_ISR_FE))
+          {
+            Device.Diag.BusUartFrameErrorCounter++;
+            __HAL_UART_CLEAR_FLAG(&huart7,USART_ISR_FE);
+          }
+          startFlag = 0;
+          HAL_UART_DMAStop(&huart7);
+          memset(BUS_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart7, (uint8_t*) BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+          Device.Diag.BusUartTimeoutCounter ++;
+        }
+      }
+    }
+  }
+  /* USER CODE END BusRxTask */
 }
 
 /**
