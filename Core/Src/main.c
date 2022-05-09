@@ -33,7 +33,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define HOST_UART_BUFFER_SIZE    40
+#define UART_BUFFER_SIZE    40
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -88,8 +88,10 @@ QSPI_HandleTypeDef hqspi;
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
+UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_uart7_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
 
 SDRAM_HandleTypeDef hsdram1;
@@ -125,7 +127,9 @@ const osMessageQueueAttr_t USBUartRxQueue_attributes = {
 
 Device_t Device;
 __IO unsigned long RTOSRunTimeStatTick;
-static char HOST_UART_RxBuffer[HOST_UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
+
+static char USB_UART_RxBuffer[UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
+static char BUS_UART_RxBuffer[UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
 
 /* USER CODE END PV */
 
@@ -143,6 +147,7 @@ static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_UART7_Init(void);
 void StartDefaultTask(void *argument);
 void Uart_Task(void *argument);
 void LiveLedTask(void *argument);
@@ -214,6 +219,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
+  MX_UART7_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
@@ -683,6 +689,42 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief UART7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART7_Init(void)
+{
+
+  /* USER CODE BEGIN UART7_Init 0 */
+
+  /* USER CODE END UART7_Init 0 */
+
+  /* USER CODE BEGIN UART7_Init 1 */
+
+  /* USER CODE END UART7_Init 1 */
+  huart7.Instance = UART7;
+  huart7.Init.BaudRate = 9600;
+  huart7.Init.WordLength = UART_WORDLENGTH_8B;
+  huart7.Init.StopBits = UART_STOPBITS_1;
+  huart7.Init.Parity = UART_PARITY_NONE;
+  huart7.Init.Mode = UART_MODE_TX_RX;
+  huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart7.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart7.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_DMADISABLEONERROR_INIT;
+  huart7.AdvancedInit.DMADisableonRxError = UART_ADVFEATURE_DMA_DISABLEONRXERROR;
+  if (HAL_RS485Ex_Init(&huart7, UART_DE_POLARITY_HIGH, 0, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN UART7_Init 2 */
+  HAL_UART_Receive_DMA (&huart1, (uint8_t*)BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+  /* USER CODE END UART7_Init 2 */
+
+}
+
+/**
   * @brief USART1 Initialization Function
   * @param None
   * @retval None
@@ -712,7 +754,7 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-  HAL_UART_Receive_DMA (&huart1, (uint8_t*)HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
+  HAL_UART_Receive_DMA (&huart1, (uint8_t*)USB_UART_RxBuffer, UART_BUFFER_SIZE);
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -760,8 +802,12 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
@@ -1189,19 +1235,15 @@ uint8_t GetDisply(void)
 
 void USBCmdParser(char *request)
 {
-  char response[HOST_UART_BUFFER_SIZE];
+  char response[UART_BUFFER_SIZE];
   char cmd[20];
   char arg1[10];
   char arg2[10];
   uint8_t params = 0;
-
-  Device.Diag.ParserTaskCounter++;
-  if(strlen(HOST_UART_RxBuffer) !=0)
+  if(strlen(USB_UART_RxBuffer) !=0)
   {
     Device.Diag.HostUartTxCommandsCounter++;
-
     params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
-
     if(params == 1)
     {/*** parameterless commands ***/
       if(!strcmp(cmd, "*OPC?"))
@@ -1335,13 +1377,9 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   MX_TouchGFX_Process();
-
-
-
   /* Infinite loop */
   for(;;)
   {
-
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -1364,29 +1402,27 @@ void Uart_Task(void *argument)
     static uint8_t startFlag;
     for(;;)
     {
-      Device.Diag.Uart_TaskCounter++;
-      if(strlen(HOST_UART_RxBuffer)!=0)
+      Device.Diag.UartTaskCounter++;
+      if(strlen(USB_UART_RxBuffer)!=0)
       {
         if(!startFlag)
         {
           timestamp = HAL_GetTick();
           startFlag = 1;
         }
-
-        for(uint8_t i=0; i < HOST_UART_BUFFER_SIZE; i++)
+        for(uint8_t i=0; i < UART_BUFFER_SIZE; i++)
         {
-          if(HOST_UART_RxBuffer[i]=='\n')
+          if(USB_UART_RxBuffer[i]=='\n')
           {
-            HOST_UART_RxBuffer[i] = 0;
+            USB_UART_RxBuffer[i] = 0;
             startFlag = 0;
             HAL_UART_DMAStop(&huart1);
-            USBCmdParser(HOST_UART_RxBuffer);
-            memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*) HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
+            USBCmdParser(USB_UART_RxBuffer);
+            memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
             Device.Diag.HostUartRxCommandsCounter ++;
           }
         }
-
         if(startFlag)
         {
           if(HAL_GetTick() - timestamp > 500)
@@ -1406,11 +1442,10 @@ void Uart_Task(void *argument)
               Device.Diag.HostUartFrameErrorCounter++;
               __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_FE);
             }
-
             startFlag = 0;
             HAL_UART_DMAStop(&huart1);
-            memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*) HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
+            memset(USB_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*) USB_UART_RxBuffer, UART_BUFFER_SIZE);
             Device.Diag.HostUartTimeoutCounter ++;
           }
         }

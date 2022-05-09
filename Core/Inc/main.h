@@ -44,8 +44,7 @@ typedef struct _DiagTypeDef
   uint32_t HostUartRxCommandsCounter;
   uint32_t HostUartTimeoutCounter;
   uint32_t HostUartTxCommandsCounter;
-  uint32_t ParserTaskCounter;
-  uint32_t Uart_TaskCounter;
+  uint32_t UartTaskCounter;
   uint32_t PowerOnOffTaskCounter;
   uint32_t PowerLedTaskCounter;
   uint64_t UpTimeSec;
