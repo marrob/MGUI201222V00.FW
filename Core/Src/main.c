@@ -24,7 +24,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "LiveLed.h"
 #include "string.h"
 #include "mx25.h"
 #include <stdio.h>
@@ -109,6 +108,13 @@ const osThreadAttr_t UartTask_attributes = {
   .stack_size = 8192 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for LiveLed_Task */
+osThreadId_t LiveLed_TaskHandle;
+const osThreadAttr_t LiveLed_Task_attributes = {
+  .name = "LiveLed_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for USBUartRxQueue */
 osMessageQueueId_t USBUartRxQueueHandle;
 const osMessageQueueAttr_t USBUartRxQueue_attributes = {
@@ -116,7 +122,6 @@ const osMessageQueueAttr_t USBUartRxQueue_attributes = {
 };
 /* USER CODE BEGIN PV */
 
-LiveLED_HnadleTypeDef hLiveLed;
 
 Device_t Device;
 __IO unsigned long RTOSRunTimeStatTick;
@@ -140,6 +145,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 void StartDefaultTask(void *argument);
 void Uart_Task(void *argument);
+void LiveLedTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -149,12 +155,10 @@ void LiveLedOn(void);
 /*** LCD ***/
 void LCD_Enable(void);
 
-
-
 void ConsoleWrite(char *str);
 void USBCmdParser(char *request);
 void UsbUartTx(char *str);
-//char *USBCmdParser(char *cmd);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -213,13 +217,6 @@ int main(void)
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
-
-  /*** LiveLed ***/
-  hLiveLed.LedOffFnPtr = &LiveLedOff;
-  hLiveLed.LedOnFnPtr = &LiveLedOn;
-  hLiveLed.HalfPeriodTimeMs = 500;
-  LiveLedInit(&hLiveLed);
-
   /*** Display ***/
   LCD_Enable();
 
@@ -262,6 +259,9 @@ int main(void)
 
   /* creation of UartTask */
   UartTaskHandle = osThreadNew(Uart_Task, NULL, &UartTask_attributes);
+
+  /* creation of LiveLed_Task */
+  LiveLed_TaskHandle = osThreadNew(LiveLedTask, NULL, &LiveLed_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1203,7 +1203,7 @@ void USBCmdParser(char *request)
     params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
 
     if(params == 1)
-    {/*** parméter mentes utasitások ***/
+    {/*** parameterless commands ***/
       if(!strcmp(cmd, "*OPC?"))
       {
         strcpy(response, "*OPC");
@@ -1287,7 +1287,7 @@ void USBCmdParser(char *request)
     }
 
     if(params == 2)
-    {/*** Paraméteres utasitások ***/
+    {/*** commands with parameters ***/
       if(!strcmp(cmd, "DIS:LIG"))
       {
         DisplayLightSet(strtol(arg1, NULL, 0));
@@ -1379,7 +1379,6 @@ void Uart_Task(void *argument)
           {
             HOST_UART_RxBuffer[i] = 0;
             startFlag = 0;
-            //xQueueSend(USBUartRxQueueHandle, HOST_UART_RxBuffer, 0);
             HAL_UART_DMAStop(&huart1);
             USBCmdParser(HOST_UART_RxBuffer);
             memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
@@ -1419,6 +1418,40 @@ void Uart_Task(void *argument)
     }
   }
   /* USER CODE END Uart_Task */
+}
+
+/* USER CODE BEGIN Header_LiveLedTask */
+/**
+* @brief Function implementing the LiveLed_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_LiveLedTask */
+void LiveLedTask(void *argument)
+{
+  /* USER CODE BEGIN LiveLedTask */
+  /* Infinite loop */
+  uint32_t timestamp = 0;
+  uint8_t flag = 0;
+  for(;;)
+  {
+    if(HAL_GetTick() - timestamp > 500)
+    {
+      timestamp = HAL_GetTick();
+      if(flag)
+      {
+        flag = 0;
+        LiveLedOn();
+      }
+      else
+      {
+        flag = 1;
+        LiveLedOff();
+        Device.Diag.UpTimeSec++;
+      }
+    }
+  }
+  /* USER CODE END LiveLedTask */
 }
 
 /**

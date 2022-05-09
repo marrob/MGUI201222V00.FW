@@ -25,7 +25,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "LiveLed.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +44,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-extern LiveLED_HnadleTypeDef hLiveLed;
 /* USER CODE END Variables */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -84,7 +82,6 @@ void vApplicationIdleHook( void )
    function, because it is the responsibility of the idle task to clean up
    memory allocated by the kernel to any task that has since been deleted. */
 
-  LiveLedTask(&hLiveLed);
    vTaskSetApplicationTaskTag(NULL, IdleTaskHook);
 }
 /* USER CODE END 2 */
