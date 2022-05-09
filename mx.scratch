@@ -14,14 +14,7 @@
       <ProjectName>MGUI201222V00.FW</ProjectName>
       <ProjectNature>Cpp</ProjectNature>
       <Secure/>
-      <filestoremove>
-        <file>
-          <name>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c</name>
-        </file>
-        <file>
-          <name>..\Src\stm32f746i.c</name>
-        </file>
-      </filestoremove>
+      <filestoremove/>
       <configs>
         <config>
           <name>MGUI201222V00.FW</name>

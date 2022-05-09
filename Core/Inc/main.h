@@ -32,18 +32,39 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "LiveLed.h"
+#include "DisplayLight.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+typedef struct _DiagTypeDef
+{
+  uint32_t HostUartRxCommandsCounter;
+  uint32_t HostUartTimeoutCounter;
+  uint32_t HostUartTxCommandsCounter;
+  uint32_t ParserTaskCounter;
+  uint32_t Uart_TaskCounter;
+  uint32_t PowerOnOffTaskCounter;
+  uint32_t PowerLedTaskCounter;
+  uint64_t UpTimeSec;
+  uint32_t HostUartOverrunErrorCounter;
+  uint32_t HostUartNoiseErrorCounter;
+  uint32_t HostUartFrameErrorCounter;
+}Diag_t;
 
+typedef struct _AppTypeDef
+{
+  double Temperature[4];
+  uint8_t Outputs;
+  uint16_t Inputs;
+  Diag_t Diag;
+}Device_t;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern I2C_HandleTypeDef hi2c2;
-//extern LiveLED_HnadleTypeDef hLiveLed;
+
 
 /* USER CODE END EC */
 

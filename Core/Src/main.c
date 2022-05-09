@@ -27,15 +27,23 @@
 #include "LiveLed.h"
 #include "string.h"
 #include "mx25.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define HOST_UART_BUFFER_SIZE    40
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+/*** MCP3208 ***/
+#define MCP320X_CH0          0
+#define MCP320X_CH1          1
+#define MCP320X_CH2          2
+#define MCP320X_CH3          3
+#define MCP320X_CON_SINGLE_END  (1<<3)
 
 /*** SDRAM ***/
 /* SDRAM refresh counter (100Mhz SD clock)    */
@@ -77,9 +85,11 @@ LTDC_HandleTypeDef hltdc;
 QSPI_HandleTypeDef hqspi;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart1_rx;
 
 SDRAM_HandleTypeDef hsdram1;
 
@@ -90,9 +100,32 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 8192 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for UartTask */
+osThreadId_t UartTaskHandle;
+const osThreadAttr_t UartTask_attributes = {
+  .name = "UartTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for USBCmdParserTas */
+osThreadId_t USBCmdParserTasHandle;
+const osThreadAttr_t USBCmdParserTas_attributes = {
+  .name = "USBCmdParserTas",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for USBUartRxQueue */
+osMessageQueueId_t USBUartRxQueueHandle;
+const osMessageQueueAttr_t USBUartRxQueue_attributes = {
+  .name = "USBUartRxQueue"
+};
 /* USER CODE BEGIN PV */
 
 LiveLED_HnadleTypeDef hLiveLed;
+
+Device_t Device;
+__IO unsigned long RTOSRunTimeStatTick;
+static char HOST_UART_RxBuffer[HOST_UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
 
 /* USER CODE END PV */
 
@@ -108,7 +141,11 @@ static void MX_I2C2_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_DMA_Init(void);
+static void MX_TIM2_Init(void);
 void StartDefaultTask(void *argument);
+void Uart_Task(void *argument);
+void USBCmdParser_Task(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -175,6 +212,8 @@ int main(void)
   MX_QUADSPI_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
+  MX_DMA_Init();
+  MX_TIM2_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
@@ -193,6 +232,9 @@ int main(void)
   MX25_EnableMemoryMappedMode(&hqspi);
   HAL_NVIC_DisableIRQ(QUADSPI_IRQn);
 
+
+  DisplayLightInit(&htim1);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -210,6 +252,10 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of USBUartRxQueue */
+  USBUartRxQueueHandle = osMessageQueueNew (16, 80, &USBUartRxQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -217,6 +263,12 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of UartTask */
+  UartTaskHandle = osThreadNew(Uart_Task, NULL, &UartTask_attributes);
+
+  /* creation of USBCmdParserTas */
+  USBCmdParserTasHandle = osThreadNew(USBCmdParser_Task, NULL, &USBCmdParserTas_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -593,6 +645,51 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 0;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 4294967295;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * @brief USART1 Initialization Function
   * @param None
   * @retval None
@@ -608,7 +705,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 460800;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -659,6 +756,22 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
 
 }
 
@@ -904,6 +1017,159 @@ void LCD_Enable(){
 void LCD_Disable(){
   HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_RESET);
 }
+
+/* Flash ---------------------------------------------------------------------*/
+int Read (uint32_t address, uint32_t size, uint8_t* buffer)
+{
+  int i = 0;
+  for (i=0; i < size;i++)
+  {
+    *(uint8_t*)buffer++ = *(uint8_t*)address;
+    address ++;
+  }
+  return 1;
+}
+
+
+/* Temperature  --------------------------------------------------------------*/
+void SwSPI_TransmittReceive(uint8_t *tx, uint8_t *rx, int length)
+{
+  for(uint8_t j=0; j < length; j++)
+  {
+    uint8_t rx_mask = 0x80;
+    uint8_t tx_mask = 0x80;
+    for(uint8_t i = 0; i<8;i++)
+    {
+      HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
+      if(tx[j] & tx_mask)
+        HAL_GPIO_WritePin(AI_MOSI_GPIO_Port, AI_MOSI_Pin, GPIO_PIN_SET);
+      else
+        HAL_GPIO_WritePin(AI_MOSI_GPIO_Port, AI_MOSI_Pin, GPIO_PIN_RESET);
+      tx_mask>>=1;
+      if(HAL_GPIO_ReadPin(AI_MISO_GPIO_Port, AI_MISO_Pin) == GPIO_PIN_SET)
+        rx[j] |= rx_mask;
+      else
+        rx[j] &= ~rx_mask;
+      rx_mask>>=1;
+      HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_SET);
+    }
+    HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
+  }
+}
+  #define MACP320X_ARRAY_SIZE 3
+  uint8_t result[MACP320X_ARRAY_SIZE];
+  uint8_t param[MACP320X_ARRAY_SIZE];
+/*
+ *
+ *config:
+ *   MSB                          LSB
+ *   0  | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+ *   X  | X | X | X |S/D|D2 |D1 |D0 |
+ */
+uint16_t MCP320x_GetValue(uint8_t config)
+{
+  uint16_t value = 0;
+  param[0] = 0x01;
+  param[1] = config << 0x04;
+  param[2] = 0;
+  HAL_GPIO_WritePin(AI_CS_GPIO_Port, AI_CS_Pin, GPIO_PIN_RESET);
+  SwSPI_TransmittReceive(param, result, MACP320X_ARRAY_SIZE);
+  HAL_GPIO_WritePin(AI_CS_GPIO_Port, AI_CS_Pin, GPIO_PIN_SET);
+  value = (result[1]&0x03)<<8;
+  value |= result[2];
+  return value;
+}
+
+double GetTemperature(uint8_t channel)
+{
+  uint16_t adc = MCP320x_GetValue(MCP320X_CON_SINGLE_END | channel /* MCP320X_CH0*/);
+  double volts = adc * 2.5/1024;
+  double temp = (-2.3654*volts*volts) + (-78.154*volts) + 153.857;
+  return temp;
+}
+
+/* DIO -----------------------------------------------------------------------*/
+void DIO_Init(void){
+  /*** DO Clear ***/
+  HAL_GPIO_WritePin(PER_CLR_GPIO_Port, PER_CLR_Pin, GPIO_PIN_RESET);
+  DelayUs(1);
+  HAL_GPIO_WritePin(PER_CLR_GPIO_Port, PER_CLR_Pin, GPIO_PIN_SET);
+  DelayUs(1);
+}
+
+void DIO_Clock(void)
+{
+  HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_SET);
+  DelayUs(5);
+  HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
+  DelayUs(5);
+}
+
+uint16_t GetInputs(void)
+{
+  return Device.Inputs;
+}
+
+uint16_t ReadInputs(void)
+{
+  uint16_t retval = 0;
+  uint16_t mask = 0x8000;
+
+  /*** Load ***/
+  HAL_GPIO_WritePin(PER_LD_GPIO_Port, PER_LD_Pin, GPIO_PIN_RESET);
+  DIO_Clock();
+  HAL_GPIO_WritePin(PER_LD_GPIO_Port, PER_LD_Pin, GPIO_PIN_SET);
+
+  for(uint8_t j = 0; j < 16; j++)
+  {
+    if(HAL_GPIO_ReadPin(PER_MISO_GPIO_Port, PER_MISO_Pin) == GPIO_PIN_SET)
+      retval|= mask;
+    else
+      retval&=~mask;
+    mask >>=1;
+    DIO_Clock();
+  }
+  return retval;
+}
+
+void SetOutputs(uint8_t data)
+{
+  Device.Outputs = data;
+
+  uint8_t mask = 0x80;
+  /*** Write ***/
+  for(uint8_t i=0; i<8; i++)
+  {
+    if(data & mask)
+      HAL_GPIO_WritePin(PER_MOSI_GPIO_Port, PER_MOSI_Pin, GPIO_PIN_SET);
+    else
+      HAL_GPIO_WritePin(PER_MOSI_GPIO_Port, PER_MOSI_Pin, GPIO_PIN_RESET);
+
+    mask>>=1;
+    DIO_Clock();
+  }
+
+  /*** Update ***/
+//  HAL_GPIO_WritePin(PER_WR_GPIO_Port, PER_WR_Pin, GPIO_PIN_SET);
+  DelayUs(1);
+//  HAL_GPIO_WritePin(PER_WR_GPIO_Port, PER_WR_Pin, GPIO_PIN_RESET);
+}
+
+uint8_t GetOutputs(void)
+{
+  return Device.Outputs;
+}
+
+/* FreeRTOS ------------------------------------------------------------------*/
+void configureTimerForRunTimeStats(void)
+{
+  HAL_TIM_Base_Start_IT(&htim2);
+}
+
+unsigned long getRunTimeCounterValue(void)
+{
+  return RTOSRunTimeStatTick;
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -927,6 +1193,97 @@ void StartDefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_Uart_Task */
+/**
+* @brief Function implementing the UartTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Uart_Task */
+void Uart_Task(void *argument)
+{
+  /* USER CODE BEGIN Uart_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Uart_Task */
+}
+
+/* USER CODE BEGIN Header_USBCmdParser_Task */
+/**
+* @brief Function implementing the USBCmdParserTas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_USBCmdParser_Task */
+void USBCmdParser_Task(void *argument)
+{
+  /* USER CODE BEGIN USBCmdParser_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    static uint32_t timestamp;
+    static uint8_t startFlag;
+    for(;;)
+    {
+      Device.Diag.Uart_TaskCounter++;
+      if(strlen(HOST_UART_RxBuffer)!=0)
+      {
+        if(!startFlag)
+        {
+          timestamp = HAL_GetTick();
+          startFlag = 1;
+        }
+
+        for(uint8_t i=0; i < HOST_UART_BUFFER_SIZE; i++)
+        {
+          if(HOST_UART_RxBuffer[i]=='\n')
+          {
+            HOST_UART_RxBuffer[i] = 0;
+            startFlag = 0;
+           // xQueueSend(USBUartRxQueueHandle, HOST_UART_RxBuffer, 0);
+            HAL_UART_DMAStop(&huart1);
+            memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*) HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
+            Device.Diag.HostUartRxCommandsCounter ++;
+          }
+        }
+
+        if(startFlag)
+        {
+          if(HAL_GetTick() - timestamp > 500)
+          {
+            if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE))
+            {
+              Device.Diag.HostUartOverrunErrorCounter++;
+              __HAL_UART_CLEAR_FLAG(&huart1,UART_CLEAR_OREF);
+            }
+            if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_NE))
+            {
+              Device.Diag.HostUartNoiseErrorCounter++;
+              __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_NE);
+            }
+            if(__HAL_UART_GET_FLAG(&huart1, USART_ISR_FE))
+            {
+              Device.Diag.HostUartFrameErrorCounter++;
+              __HAL_UART_CLEAR_FLAG(&huart1,USART_ISR_FE);
+            }
+
+            startFlag = 0;
+            HAL_UART_DMAStop(&huart1);
+            memset(HOST_UART_RxBuffer, 0x00, HOST_UART_BUFFER_SIZE);
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*) HOST_UART_RxBuffer, HOST_UART_BUFFER_SIZE);
+            Device.Diag.HostUartTimeoutCounter ++;
+          }
+        }
+      }
+    }
+  }
+  /* USER CODE END USBCmdParser_Task */
 }
 
 /**

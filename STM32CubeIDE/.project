@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>MGUI201222V00.FW</name>
-	<comment/>
+	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -42,11 +42,6 @@
 			<name>Drivers/CMSIS/system_stm32f7xx.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/system_stm32f7xx.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/Common/vt100.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/vt100.h</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LED/Led.c</name>
@@ -229,54 +224,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/gt911/ts.h</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/FreeRTOS/cmsis_os.c</name>
+			<name>Application/User/Core/DisplayLight.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/croutine.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/croutine.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/event_groups.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/heap_4.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/list.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/list.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/port.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/queue.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/queue.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/stream_buffer.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/tasks.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/tasks.c</locationURI>
-		</link>
-		<link>
-			<name>Middlewares/FreeRTOS/timers.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/timers.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/DisplayLight.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/freertos.c</name>
@@ -304,109 +254,24 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32f7xx_it.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/TouchGFX/App/app_touchgfx.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/App/app_touchgfx.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/CortexMMCUInstrumentation.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/CortexMMCUInstrumentation.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/STM32TouchController.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/STM32TouchController.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/TouchGFXGPIO.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/TouchGFXGPIO.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/TouchGFXHAL.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/TouchGFXHAL.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/generated/OSWrappers.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/OSWrappers.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/generated/STM32DMA.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/STM32DMA.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/generated/TouchGFXConfiguration.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/TouchGFXConfiguration.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/TouchGFX/target/generated/TouchGFXGeneratedHAL.cpp</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/TouchGFXGeneratedHAL.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/FrontendApplication.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/common/FrontendApplication.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/DisplayScreenPresenter.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/displayscreen_screen/DisplayScreenPresenter.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/DisplayScreenView.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/displayscreen_screen/DisplayScreenView.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/MainPresenter.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/main_screen/MainPresenter.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/MainView.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/main_screen/MainView.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/Model.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/model/Model.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/OffScreenPresenter.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/offscreen_screen/OffScreenPresenter.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/OffScreenView.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/offscreen_screen/OffScreenView.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/SettingsScreenPresenter.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/settingsscreen_screen/SettingsScreenPresenter.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/gui/SettingsScreenView.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/settingsscreen_screen/SettingsScreenView.cpp</locationURI>
-		</link>
-		<link>
 			<name>Application/User/generated/ApplicationFontProvider.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/ApplicationFontProvider.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/generated/BitmapDatabase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/BitmapDatabase.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/generated/CachedFont.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/CachedFont.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/generated/DisplayScreenViewBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/displayscreen_screen/DisplayScreenViewBase.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/FontCache.cpp</name>
@@ -439,6 +304,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/Font_micross_65_4bpp_0.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/generated/FrontendApplicationBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/generated/GeneratedFont.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/GeneratedFont.cpp</locationURI>
@@ -469,6 +339,26 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/Kerning_micross_65_4bpp.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/generated/LanguageGb.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/LanguageGb.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/generated/MainViewBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/main_screen/MainViewBase.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/generated/OffScreenViewBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/offscreen_screen/OffScreenViewBase.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/generated/SettingsScreenViewBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/settingsscreen_screen/SettingsScreenViewBase.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/generated/Table_Asap_Regular_40_4bpp.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/Table_Asap_Regular_40_4bpp.cpp</locationURI>
@@ -494,39 +384,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/Table_micross_65_4bpp.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/generated/Texts.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/Texts.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/generated/TypedTextDatabase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/TypedTextDatabase.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/generated/UnmappedDataFont.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/fonts/src/UnmappedDataFont.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/FrontendApplicationBase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/DisplayScreenViewBase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/displayscreen_screen/DisplayScreenViewBase.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/MainViewBase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/main_screen/MainViewBase.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/OffScreenViewBase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/offscreen_screen/OffScreenViewBase.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/SettingsScreenViewBase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/gui_generated/src/settingsscreen_screen/SettingsScreenViewBase.cpp</locationURI>
-		</link>
-		<link>
-			<name>Application/User/generated/BitmapDatabase.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/BitmapDatabase.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/generated/image_BNC_80x80_fb.cpp</name>
@@ -639,19 +509,199 @@
 			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/images/src/image_XLR_80x80_s.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/LanguageGb.cpp</name>
+			<name>Application/User/gui/DisplayScreenPresenter.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/LanguageGb.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/displayscreen_screen/DisplayScreenPresenter.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/Texts.cpp</name>
+			<name>Application/User/gui/DisplayScreenView.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/Texts.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/displayscreen_screen/DisplayScreenView.cpp</locationURI>
 		</link>
 		<link>
-			<name>Application/User/generated/TypedTextDatabase.cpp</name>
+			<name>Application/User/gui/FrontendApplication.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/generated/texts/src/TypedTextDatabase.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/common/FrontendApplication.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/MainPresenter.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/main_screen/MainPresenter.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/MainView.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/main_screen/MainView.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/Model.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/model/Model.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/OffScreenPresenter.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/offscreen_screen/OffScreenPresenter.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/OffScreenView.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/offscreen_screen/OffScreenView.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/SettingsScreenPresenter.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/settingsscreen_screen/SettingsScreenPresenter.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/gui/SettingsScreenView.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TouchGFX/gui/src/settingsscreen_screen/SettingsScreenView.cpp</locationURI>
+		</link>
+		<link>
+			<name>Drivers/Common/Inc/StringPlus.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/Inc/StringPlus.h</locationURI>
+		</link>
+		<link>
+			<name>Drivers/Common/Inc/common.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/Inc/common.h</locationURI>
+		</link>
+		<link>
+			<name>Drivers/Common/Inc/vt100.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/Inc/vt100.h</locationURI>
+		</link>
+		<link>
+			<name>Drivers/Common/Src/StringPlus.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/Src/StringPlus.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/Common/Src/common.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/Common/Src/common.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/DisplayLight.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/DisplayLight.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/FreeRTOSConfig.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/FreeRTOSConfig.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/main.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/main.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/stm32f7xx_hal_conf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/stm32f7xx_hal_conf.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/stm32f7xx_it.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/stm32f7xx_it.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/App/app_touchgfx.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/App/app_touchgfx.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/CortexMMCUInstrumentation.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/CortexMMCUInstrumentation.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/STM32TouchController.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/STM32TouchController.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/TouchGFXGPIO.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/TouchGFXGPIO.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/TouchGFXHAL.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/TouchGFXHAL.cpp</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/cmsis_os.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/croutine.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/croutine.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/event_groups.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/heap_4.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/list.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/list.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/port.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/queue.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/queue.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/stream_buffer.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/tasks.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/tasks.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/Middlewares/FreeRTOS/timers.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/Third_Party/FreeRTOS/Source/timers.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/generated/OSWrappers.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/OSWrappers.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/generated/STM32DMA.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/STM32DMA.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/generated/TouchGFXConfiguration.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/TouchGFXConfiguration.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/TouchGFX/target/generated/TouchGFXGeneratedHAL.cpp</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/TouchGFX/target/generated/TouchGFXGeneratedHAL.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
