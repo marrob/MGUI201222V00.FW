@@ -64,6 +64,7 @@ typedef struct _DiagTypeDef
   uint32_t RS485RequestCnt;
   uint32_t RS485UnknownCnt;
   uint32_t RS485ResponseCnt;
+  uint32_t RS485RdyCnt;
 
 
   uint32_t PowerLedTaskCounter;

@@ -116,10 +116,10 @@ const osThreadAttr_t LiveLed_Task_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for BusRx_Task */
-osThreadId_t BusRx_TaskHandle;
-const osThreadAttr_t BusRx_Task_attributes = {
-  .name = "BusRx_Task",
+/* Definitions for RS485Rx_Task */
+osThreadId_t RS485Rx_TaskHandle;
+const osThreadAttr_t RS485Rx_Task_attributes = {
+  .name = "RS485Rx_Task",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -163,7 +163,7 @@ static void MX_UART7_Init(void);
 void StartDefaultTask(void *argument);
 void UsbRxTask(void *argument);
 void LiveLedTask(void *argument);
-void BusRxTask(void *argument);
+void RS485RxTask(void *argument);
 void RS485TxTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -288,8 +288,8 @@ int main(void)
   /* creation of LiveLed_Task */
   LiveLed_TaskHandle = osThreadNew(LiveLedTask, NULL, &LiveLed_Task_attributes);
 
-  /* creation of BusRx_Task */
-  BusRx_TaskHandle = osThreadNew(BusRxTask, NULL, &BusRx_Task_attributes);
+  /* creation of RS485Rx_Task */
+  RS485Rx_TaskHandle = osThreadNew(RS485RxTask, NULL, &RS485Rx_Task_attributes);
 
   /* creation of RS485Tx_Task */
   RS485Tx_TaskHandle = osThreadNew(RS485TxTask, NULL, &RS485Tx_Task_attributes);
@@ -1395,13 +1395,21 @@ void RS485Parser(char *response)
   {
     Device.Diag.RS485ResponseCnt++;
     params = sscanf(response, "%s %s %s", cmd, arg1, arg2);
+    if(params == 1)
+    {
+      if(!strcmp(cmd, "RDY"))
+      {
+        Device.Diag.RS485RdyCnt++;
+      }
+      else
+      {
+        Device.Diag.RS485UnknownCnt++;
+      }
+    }
+
     if(params == 2)
     {
       if(!strcmp(cmd, "*OPC"))
-      {
-
-      }
-      else if(!strcmp(cmd, "*RDY"))
       {
 
       }
@@ -1559,16 +1567,16 @@ void LiveLedTask(void *argument)
   /* USER CODE END LiveLedTask */
 }
 
-/* USER CODE BEGIN Header_BusRxTask */
+/* USER CODE BEGIN Header_RS485RxTask */
 /**
-* @brief Function implementing the BusRx_Task thread.
+* @brief Function implementing the RS485Rx_Task thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_BusRxTask */
-void BusRxTask(void *argument)
+/* USER CODE END Header_RS485RxTask */
+void RS485RxTask(void *argument)
 {
-  /* USER CODE BEGIN BusRxTask */
+  /* USER CODE BEGIN RS485RxTask */
   /* Infinite loop */
   static uint32_t timestamp;
   static uint8_t startFlag;
@@ -1624,7 +1632,7 @@ void BusRxTask(void *argument)
     }
     osDelay(10);
   }
-  /* USER CODE END BusRxTask */
+  /* USER CODE END RS485RxTask */
 }
 
 /* USER CODE BEGIN Header_RS485TxTask */
@@ -1639,15 +1647,21 @@ void RS485TxTask(void *argument)
   /* USER CODE BEGIN RS485TxTask */
   /* Infinite loop */
   uint8_t cmdId = 0;
+  RS485UartTx("OUTS?");
+  char temp[20];
   for(;;)
   {
     switch (cmdId)
     {
       case 0: RS485UartTx("UPTIME?");break;
       case 1: RS485UartTx("STATUS?");break;
-      case 2: RS485UartTx("OUTS?");break;
-      case 3: /*RS485UartTx("OUTS?");*/break;
+      case 3:{
+        sprintf(temp,"OUTS %02X", Device.Outputs);
+        RS485UartTx(temp);
+        break;
+      };
     }
+
     if(cmdId == 3)
     {
       cmdId = 0;
@@ -1657,7 +1671,7 @@ void RS485TxTask(void *argument)
       cmdId++;
     }
     Device.Diag.RS485RequestCnt++;
-    osDelay(250);
+    osDelay(100);
   }
   /* USER CODE END RS485TxTask */
 }
