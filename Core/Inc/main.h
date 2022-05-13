@@ -35,6 +35,7 @@ extern "C" {
 #include "vt100.h"
 #include "common.h"
 #include "DisplayLight.h"
+#include "PowerLed.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,13 +54,13 @@ typedef struct _DiagTypeDef
   uint32_t BusUartTaskCounter;
 
   uint32_t UsbUartOverrunErrorCounter;
-  uint32_t BusUartOverrunErrorCounter;
+  uint32_t RS485OverrunErrorCnt;
 
   uint32_t UsbUartNoiseErrorCounter;
-  uint32_t BusUartNoiseErrorCounter;
+  uint32_t RS485NoiseErrorCnt;
 
   uint32_t UsbUartFrameErrorCounter;
-  uint32_t BusUartFrameErrorCounter;
+  uint32_t RS485FrameErrorCnt;
 
   uint32_t RS485RequestCnt;
   uint32_t RS485UnknownCnt;
@@ -90,6 +91,8 @@ typedef struct _AppTypeDef
   }Karuna;
 
 }Device_t;
+
+extern Device_t Device;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

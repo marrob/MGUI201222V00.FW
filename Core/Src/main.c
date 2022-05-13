@@ -172,7 +172,7 @@ void LiveLedOff(void);
 void LiveLedOn(void);
 
 /*** LCD ***/
-void LCD_Enable(void);
+
 
 void ConsoleWrite(char *str);
 void UsbParser(char *request);
@@ -243,15 +243,23 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /*** Display ***/
-  LCD_Enable();
+  DisplayDisable();
 
   /*** Flash ***/
   MX25_Init(&hqspi);
   MX25_EnableMemoryMappedMode(&hqspi);
   HAL_NVIC_DisableIRQ(QUADSPI_IRQn);
 
-
+  /*** Leds ***/
   DisplayLightInit(&htim1);
+  DisplayLightSet(100);
+
+  PowerLedInit(&htim1);
+  PowerSetLedLight(10);
+  PowerLedSetState(PWR_LED_ON);
+
+
+
 
   /* USER CODE END 2 */
 
@@ -301,6 +309,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
+
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
@@ -924,7 +933,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, AI_CS_Pin|AI_MOSI_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, LIVE_LED_Pin|PER_LD_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, LIVE_LED_Pin|PER_LD_Pin|DISP_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(TS_RST_GPIO_Port, TS_RST_Pin, GPIO_PIN_RESET);
@@ -934,9 +943,6 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOG, PSP_EN_Pin|PER_CLR_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : DO_EN_Pin */
   GPIO_InitStruct.Pin = DO_EN_Pin;
@@ -965,8 +971,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(AI_MISO_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LIVE_LED_Pin PER_LD_Pin DISP_EN_Pin */
-  GPIO_InitStruct.Pin = LIVE_LED_Pin|PER_LD_Pin|DISP_EN_Pin;
+  /*Configure GPIO pins : LIVE_LED_Pin PER_LD_Pin */
+  GPIO_InitStruct.Pin = LIVE_LED_Pin|PER_LD_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1005,6 +1011,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : DISP_EN_Pin */
+  GPIO_InitStruct.Pin = DISP_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DISP_EN_GPIO_Port, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -1038,13 +1051,7 @@ void PSP_Enable(){
   HAL_GPIO_WritePin(PSP_EN_GPIO_Port, PSP_EN_Pin, GPIO_PIN_SET);
 }
 
-/* Display---------------------------------------------------------------------*/
-void LCD_Enable(){
-  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_SET);
-}
-void LCD_Disable(){
-  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_RESET);
-}
+
 
 /* Flash ---------------------------------------------------------------------*/
 int Read (uint32_t address, uint32_t size, uint8_t* buffer)
@@ -1563,6 +1570,11 @@ void LiveLedTask(void *argument)
         Device.Diag.UpTimeSec++;
       }
     }
+
+    if(Device.Diag.UpTimeSec > 1)
+      DisplayEnable();
+
+    osDelay(10);
   }
   /* USER CODE END LiveLedTask */
 }
@@ -1609,17 +1621,17 @@ void RS485RxTask(void *argument)
         {
           if(__HAL_UART_GET_FLAG(&huart7, UART_FLAG_ORE))
           {
-            Device.Diag.BusUartOverrunErrorCounter++;
+            Device.Diag.RS485OverrunErrorCnt++;
             __HAL_UART_CLEAR_FLAG(&huart7,UART_CLEAR_OREF);
           }
           if(__HAL_UART_GET_FLAG(&huart7, USART_ISR_NE))
           {
-            Device.Diag.BusUartNoiseErrorCounter++;
+            Device.Diag.RS485NoiseErrorCnt++;
             __HAL_UART_CLEAR_FLAG(&huart7,USART_ISR_NE);
           }
           if(__HAL_UART_GET_FLAG(&huart7, USART_ISR_FE))
           {
-            Device.Diag.BusUartFrameErrorCounter++;
+            Device.Diag.RS485FrameErrorCnt++;
             __HAL_UART_CLEAR_FLAG(&huart7,USART_ISR_FE);
           }
           startFlag = 0;

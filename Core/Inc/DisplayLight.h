@@ -24,6 +24,8 @@ typedef struct _DisplayLight
 void DisplayLightInit(TIM_HandleTypeDef *htim);
 uint8_t DisplayLightSet(uint8_t percent);
 uint8_t DisplayLightGet(void);
+void DisplayEnable(void);
+void DisplayDisable(void);
 
 
 #endif /* APPLICATION_USER_CORE_INC_DISPLAYLIGHT_H_ */

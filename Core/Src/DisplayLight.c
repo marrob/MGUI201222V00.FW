@@ -14,7 +14,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 DisplayLight_t _displayLight;
-TIM_HandleTypeDef *_htim;
+static TIM_HandleTypeDef *_htim;
 /* Private function prototypes -----------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
 
@@ -39,6 +39,14 @@ uint8_t DisplayLightSet(uint8_t percent)
 uint8_t DisplayLightGet(void)
 {
   return  _displayLight.LightPercent;
+}
+
+
+void DisplayEnable(){
+  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_SET);
+}
+void DisplayDisable(){
+  HAL_GPIO_WritePin(DISP_EN_GPIO_Port, DISP_EN_Pin, GPIO_PIN_RESET);
 }
 
 /************************ (C) COPYRIGHT KonvolucioBt ***********END OF FILE****/
