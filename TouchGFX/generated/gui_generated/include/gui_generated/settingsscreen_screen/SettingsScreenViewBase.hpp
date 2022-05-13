@@ -15,6 +15,7 @@
 #include <touchgfx/widgets/ToggleButton.hpp>
 #include <touchgfx/widgets/canvas/Line.hpp>
 #include <touchgfx/widgets/canvas/PainterRGB565.hpp>
+#include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 #include <touchgfx/widgets/RadioButtonGroup.hpp>
 
 class SettingsScreenViewBase : public touchgfx::View<SettingsScreenPresenter>
@@ -47,7 +48,15 @@ protected:
     touchgfx::PainterRGB565 line1Painter;
     touchgfx::Line line1_1;
     touchgfx::PainterRGB565 line1_1Painter;
+    touchgfx::TextArea textArea2_1_1_1;
+    touchgfx::TextAreaWithOneWildcard lblKarunaUptime;
     touchgfx::RadioButtonGroup<2> radioButtonGroup1;
+
+    /*
+     * Wildcard Buffers
+     */
+    static const uint16_t LBLKARUNAUPTIME_SIZE = 10;
+    touchgfx::Unicode::UnicodeChar lblKarunaUptimeBuffer[LBLKARUNAUPTIME_SIZE];
 
 private:
 

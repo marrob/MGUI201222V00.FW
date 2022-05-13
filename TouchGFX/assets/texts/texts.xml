@@ -97,12 +97,21 @@
     <Text Id="__SingleUse_G2P3" TypographyId="Value" Alignment="Left" Direction="LTR">
       <Translation Language="GB">DoP</Translation>
     </Text>
+    <Text Id="__SingleUse_9C3M" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">Karuna uptime counter : </Translation>
+    </Text>
+    <Text Id="__SingleUse_542M" TypographyId="Settings" Alignment="Center" Direction="LTR">
+      <Translation Language="GB">&lt;value&gt;</Translation>
+    </Text>
+    <Text Id="__SingleUse_P0TG" TypographyId="Settings" Alignment="Left" Direction="LTR">
+      <Translation Language="GB">0</Translation>
+    </Text>
   </Texts>
   <Typographies>
     <Typography Id="Default" Font="Asap-Regular.ttf" Size="40" Bpp="4" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
     <Typography Id="Desc" Font="micross.ttf" Size="25" Bpp="4" FallbackCharacter="?" />
     <Typography Id="Value" Font="micross.ttf" Size="65" Bpp="4" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
-    <Typography Id="Settings" Font="corbell.ttf" Size="30" Bpp="4" FallbackCharacter="?" />
+    <Typography Id="Settings" Font="corbell.ttf" Size="30" Bpp="4" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
     <Typography Id="Typography_00" Font="consola.ttf" Size="70" Bpp="4" FallbackCharacter="?" />
   </Typographies>
 </TextDatabase>

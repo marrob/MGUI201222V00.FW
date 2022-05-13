@@ -86,6 +86,18 @@ SettingsScreenViewBase::SettingsScreenViewBase() :
     line1_1.setLineWidth(2);
     line1_1.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
 
+    textArea2_1_1_1.setPosition(40, 384, 295, 44);
+    textArea2_1_1_1.setColor(touchgfx::Color::getColorFromRGB(200, 200, 200));
+    textArea2_1_1_1.setLinespacing(0);
+    textArea2_1_1_1.setTypedText(touchgfx::TypedText(T___SINGLEUSE_9C3M));
+
+    lblKarunaUptime.setPosition(344, 384, 51, 44);
+    lblKarunaUptime.setColor(touchgfx::Color::getColorFromRGB(200, 200, 200));
+    lblKarunaUptime.setLinespacing(0);
+    Unicode::snprintf(lblKarunaUptimeBuffer, LBLKARUNAUPTIME_SIZE, "%s", touchgfx::TypedText(T___SINGLEUSE_P0TG).getText());
+    lblKarunaUptime.setWildcard(lblKarunaUptimeBuffer);
+    lblKarunaUptime.setTypedText(touchgfx::TypedText(T___SINGLEUSE_542M));
+
     add(__background);
     add(box1);
     add(btnDisplay);
@@ -99,6 +111,8 @@ SettingsScreenViewBase::SettingsScreenViewBase() :
     add(textArea2_1_1);
     add(line1);
     add(line1_1);
+    add(textArea2_1_1_1);
+    add(lblKarunaUptime);
     radioButtonGroup1.add(rdbtnEnableAll);
     radioButtonGroup1.add(rdbtnEnableSelected);
 }

@@ -41,9 +41,16 @@ public:
     colortype GetThermalColor(bool p_State);
     bool ToBinary(int number, int p_Position);
     void CopyBit(int input, int* output, int CopyFrom, int CopyTo);
+    void SetBit(uint8_t* input, bool bit, int SetTo);
 
     virtual void OpenScreenoff();
     virtual void ShowDipslay();
+
+#ifdef SIMULATOR
+//SIMULATED
+    uint8_t ReadKarunaStatus();
+    void WriteKarunaControl(uint8_t p_Output);
+#endif
        
 
 protected:
