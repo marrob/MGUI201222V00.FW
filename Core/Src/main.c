@@ -1427,7 +1427,7 @@ void RS485Parser(char *response)
       }
       else if(!strcmp(cmd,"UPTIME"))
       {
-         Device.Karuna.UpTimeSec = strtol(arg1, NULL, 0);
+         Device.Karuna.UpTimeSec = strtol(arg1, NULL, 16);
       }
       else if(!strcmp(cmd, "STATUS"))
       {
@@ -1656,7 +1656,7 @@ void RS485TxTask(void *argument)
       case 0: RS485UartTx("UPTIME?");break;
       case 1: RS485UartTx("STATUS?");break;
       case 3:{
-        sprintf(temp,"OUTS %02X", Device.Outputs);
+        sprintf(temp,"OUTS %02X", Device.Karuna.Outputs);
         RS485UartTx(temp);
         break;
       };
