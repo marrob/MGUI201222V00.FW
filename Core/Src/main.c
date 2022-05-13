@@ -86,7 +86,6 @@ LTDC_HandleTypeDef hltdc;
 QSPI_HandleTypeDef hqspi;
 
 TIM_HandleTypeDef htim1;
-TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart1;
@@ -124,6 +123,13 @@ const osThreadAttr_t BusRx_Task_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for RS485Tx_Task */
+osThreadId_t RS485Tx_TaskHandle;
+const osThreadAttr_t RS485Tx_Task_attributes = {
+  .name = "RS485Tx_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for USBUartRxQueue */
 osMessageQueueId_t USBUartRxQueueHandle;
 const osMessageQueueAttr_t USBUartRxQueue_attributes = {
@@ -136,7 +142,7 @@ Device_t Device;
 __IO unsigned long RTOSRunTimeStatTick;
 
 static char USB_UART_RxBuffer[UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
-static char BUS_UART_RxBuffer[UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
+static char RS485_UART_RxBuffer[UART_BUFFER_SIZE] __attribute__ ((aligned (32)));
 
 /* USER CODE END PV */
 
@@ -153,12 +159,12 @@ static void MX_QUADSPI_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_UART7_Init(void);
 void StartDefaultTask(void *argument);
 void UsbRxTask(void *argument);
 void LiveLedTask(void *argument);
 void BusRxTask(void *argument);
+void RS485TxTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -171,8 +177,12 @@ void LCD_Enable(void);
 void ConsoleWrite(char *str);
 void UsbParser(char *request);
 void UsbUartTx(char *str);
-void BusParser(char *request);
-void BusUartTx(char *str);
+
+/*** RS485 ***/
+void RS485DirTx(void);
+void RS485DirRx(void);
+void RS485Parser(char *response);
+void RS485UartTx(char *str);
 
 /* USER CODE END PFP */
 
@@ -228,7 +238,6 @@ int main(void)
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
-  MX_TIM2_Init();
   MX_UART7_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
@@ -281,6 +290,9 @@ int main(void)
 
   /* creation of BusRx_Task */
   BusRx_TaskHandle = osThreadNew(BusRxTask, NULL, &BusRx_Task_attributes);
+
+  /* creation of RS485Tx_Task */
+  RS485Tx_TaskHandle = osThreadNew(RS485TxTask, NULL, &RS485Tx_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -657,51 +669,6 @@ static void MX_TIM1_Init(void)
 }
 
 /**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
-
-}
-
-/**
   * @brief UART7 Initialization Function
   * @param None
   * @retval None
@@ -725,14 +692,13 @@ static void MX_UART7_Init(void)
   huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart7.Init.OverSampling = UART_OVERSAMPLING_16;
   huart7.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_DMADISABLEONERROR_INIT;
-  huart7.AdvancedInit.DMADisableonRxError = UART_ADVFEATURE_DMA_DISABLEONRXERROR;
-  if (HAL_RS485Ex_Init(&huart7, UART_DE_POLARITY_HIGH, 0, 0) != HAL_OK)
+  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart7) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN UART7_Init 2 */
-  HAL_UART_Receive_DMA (&huart1, (uint8_t*)BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+  HAL_UART_Receive_DMA (&huart7, (uint8_t*)RS485_UART_RxBuffer, UART_BUFFER_SIZE);
   /* USER CODE END UART7_Init 2 */
 
 }
@@ -952,6 +918,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(DO_EN_GPIO_Port, DO_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(RS_485_DIR_GPIO_Port, RS_485_DIR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, AI_CS_Pin|AI_MOSI_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -975,6 +944,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DO_EN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : RS_485_DIR_Pin */
+  GPIO_InitStruct.Pin = RS_485_DIR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(RS_485_DIR_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : AI_CS_Pin AI_MOSI_Pin */
   GPIO_InitStruct.Pin = AI_CS_Pin|AI_MOSI_Pin;
@@ -1215,7 +1191,7 @@ uint8_t GetOutputs(void)
 /* FreeRTOS ------------------------------------------------------------------*/
 void configureTimerForRunTimeStats(void)
 {
-  HAL_TIM_Base_Start_IT(&htim2);
+  //HAL_TIM_Base_Start_IT(&htim2);
 }
 
 unsigned long getRunTimeCounterValue(void)
@@ -1225,17 +1201,12 @@ unsigned long getRunTimeCounterValue(void)
 
 void UsbUartTx(char *str)
 {
-  char temp[80];
+  static char temp[80];
   sprintf(temp, "%s\n",str);
   HAL_UART_Transmit(&huart1, (uint8_t*)temp, strlen(temp), 100);
 }
 
-void BusUartTx(char *str)
-{
-  char temp[80];
-  sprintf(temp, "%s\n",str);
-  HAL_UART_Transmit(&huart7, (uint8_t*)temp, strlen(temp), 100);
-}
+
 /* Display--------------------------------------------------------------------*/
 void SetDisplayOn()
 {
@@ -1383,67 +1354,84 @@ void UsbParser(char *request)
   }
 }
 
-void BusParser(char *request)
+/* RS485----------------------------------------------------------------------*/
+void RS485DirTx(void)
 {
-  char response[UART_BUFFER_SIZE];
+  HAL_GPIO_WritePin(RS_485_DIR_GPIO_Port, RS_485_DIR_Pin, GPIO_PIN_SET);
+}
+
+void RS485DirRx(void)
+{
+  HAL_GPIO_WritePin(RS_485_DIR_GPIO_Port, RS_485_DIR_Pin, GPIO_PIN_RESET);
+}
+
+void RS485UartTx(char *str)
+{
+  static char temp[80];
+
+  RS485DirTx();
+  DelayMs(1);
+  sprintf(temp, "%s\n",str);
+  HAL_UART_Transmit(&huart7, (uint8_t*)temp, strlen(temp), 100);
+  RS485DirRx();
+}
+
+void RS485Parser(char *response)
+{
+#define RS485_CMD_SIZE  20
+#define RS485_ARG1_SIZE 10
+#define RS485_ARG2_SIZE 10
+
   char cmd[20];
   char arg1[10];
   char arg2[10];
   uint8_t params = 0;
-  if(strlen(USB_UART_RxBuffer) !=0)
+
+  memset(cmd,0xCC, RS485_CMD_SIZE);
+  memset(arg1,0xCC, RS485_ARG1_SIZE);
+  memset(arg2,0xCC, RS485_ARG2_SIZE);
+
+  if(strlen(response) !=0)
   {
-    params = sscanf(request, "%s %s %s", cmd, arg1, arg2);
-    if(params == 1)
-    {/*** parameterless commands ***/
-      if(!strcmp(cmd, "*OPC?"))
-      {
-        strcpy(response, "*OPC");
-      }
-      else if(!strcmp(cmd, "*RDY?"))
-      {
-        strcpy(response, "*RDY");
-      }
-      else if(!strcmp(cmd, "*WHOIS?"))
-      {
-        strcpy(response, DEVICE_NAME);
-      }
-      else if(!strcmp(cmd, "*VER?"))
-      {
-        strcpy(response, DEVICE_FW);
-      }
-      else if(!strcmp(cmd, "*UID?"))
-      {
-        sprintf(response, "%4lX%4lX%4lX",HAL_GetUIDw0(), HAL_GetUIDw1(), HAL_GetUIDw2());
-      }
-      else if(!strcmp(cmd,"UPTIME?"))
-      {
-        sprintf(response, "%lld", Device.Diag.UpTimeSec);
-      }
-      else if(!strcmp(cmd, "DIS:LIG?"))
-      {
-        sprintf(response, "%d", DisplayLightGet());
-      }
-      else
-      {
-        strcpy(response, "!UNKNOWN");
-      }
-    }
+    Device.Diag.RS485ResponseCnt++;
+    params = sscanf(response, "%s %s %s", cmd, arg1, arg2);
     if(params == 2)
-    {/*** commands with parameters ***/
-      if(!strcmp(cmd, "DIS:LIG"))
+    {
+      if(!strcmp(cmd, "*OPC"))
       {
-        DisplayLightSet(strtol(arg1, NULL, 0));
-        strcpy(response, "RDY");
+
       }
-      else if(!strcmp(cmd, "DIG:OUT:SET:U8"))
+      else if(!strcmp(cmd, "*RDY"))
       {
-        uint8_t value = strtol(arg1, NULL, 16);
-        SetOutputs(value);
-        strcpy(response, "RDY");
+
+      }
+      else if(!strcmp(cmd, "*WHOIS"))
+      {
+
+      }
+      else if(!strcmp(cmd, "*VER"))
+      {
+
+      }
+      else if(!strcmp(cmd, "*UID"))
+      {
+
+      }
+      else if(!strcmp(cmd,"UPTIME"))
+      {
+         Device.Karuna.UpTimeSec = strtol(arg1, NULL, 0);
+      }
+      else if(!strcmp(cmd, "STATUS"))
+      {
+        Device.Karuna.Status = strtol(arg1, NULL, 16);
+      }
+      else if(!strcmp(cmd, "OUTS"))
+      {
+        Device.Karuna.Outputs = strtol(arg1, NULL, 16);
       }
       else
       {
-        strcpy(response, "!UNKNOWN");
+        Device.Diag.RS485UnknownCnt++;
       }
     }
   }
@@ -1532,6 +1520,7 @@ void UsbRxTask(void *argument)
         }
       }
     }
+    osDelay(10);
   }
   /* USER CODE END UsbRxTask */
 }
@@ -1564,7 +1553,6 @@ void LiveLedTask(void *argument)
         flag = 1;
         LiveLedOff();
         Device.Diag.UpTimeSec++;
-        BusUartTx("Test");
       }
     }
   }
@@ -1587,7 +1575,7 @@ void BusRxTask(void *argument)
   for(;;)
   {
     Device.Diag.BusUartTaskCounter++;
-    if(strlen(BUS_UART_RxBuffer)!=0)
+    if(strlen(RS485_UART_RxBuffer)!=0)
     {
       if(!startFlag)
       {
@@ -1596,14 +1584,14 @@ void BusRxTask(void *argument)
       }
       for(uint8_t i=0; i < UART_BUFFER_SIZE; i++)
       {
-        if(BUS_UART_RxBuffer[i]=='\n')
+        if(RS485_UART_RxBuffer[i]=='\n')
         {
-          BUS_UART_RxBuffer[i] = 0;
+          RS485_UART_RxBuffer[i] = 0;
           startFlag = 0;
           HAL_UART_DMAStop(&huart7);
-          //USBCmdParser(BUS_UART_RxBuffer);
-          memset(BUS_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
-          HAL_UART_Receive_DMA(&huart7, (uint8_t*) BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+          RS485Parser(RS485_UART_RxBuffer);
+          memset(RS485_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart7, (uint8_t*) RS485_UART_RxBuffer, UART_BUFFER_SIZE);
           Device.Diag.BusUartRxCommandsCounter ++;
         }
       }
@@ -1628,14 +1616,50 @@ void BusRxTask(void *argument)
           }
           startFlag = 0;
           HAL_UART_DMAStop(&huart7);
-          memset(BUS_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
-          HAL_UART_Receive_DMA(&huart7, (uint8_t*) BUS_UART_RxBuffer, UART_BUFFER_SIZE);
+          memset(RS485_UART_RxBuffer, 0x00, UART_BUFFER_SIZE);
+          HAL_UART_Receive_DMA(&huart7, (uint8_t*) RS485_UART_RxBuffer, UART_BUFFER_SIZE);
           Device.Diag.BusUartTimeoutCounter ++;
         }
       }
     }
+    osDelay(10);
   }
   /* USER CODE END BusRxTask */
+}
+
+/* USER CODE BEGIN Header_RS485TxTask */
+/**
+* @brief Function implementing the RS485Tx_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_RS485TxTask */
+void RS485TxTask(void *argument)
+{
+  /* USER CODE BEGIN RS485TxTask */
+  /* Infinite loop */
+  uint8_t cmdId = 0;
+  for(;;)
+  {
+    switch (cmdId)
+    {
+      case 0: RS485UartTx("UPTIME?");break;
+      case 1: RS485UartTx("STATUS?");break;
+      case 2: RS485UartTx("OUTS?");break;
+      case 3: /*RS485UartTx("OUTS?");*/break;
+    }
+    if(cmdId == 3)
+    {
+      cmdId = 0;
+    }
+    else
+    {
+      cmdId++;
+    }
+    Device.Diag.RS485RequestCnt++;
+    osDelay(250);
+  }
+  /* USER CODE END RS485TxTask */
 }
 
 /**

@@ -61,10 +61,18 @@ typedef struct _DiagTypeDef
   uint32_t UsbUartFrameErrorCounter;
   uint32_t BusUartFrameErrorCounter;
 
-  uint32_t PowerOnOffTaskCounter;
+  uint32_t RS485RequestCnt;
+  uint32_t RS485UnknownCnt;
+  uint32_t RS485ResponseCnt;
+
+
   uint32_t PowerLedTaskCounter;
   uint64_t UpTimeSec;
+
+
 }Diag_t;
+
+
 
 typedef struct _AppTypeDef
 {
@@ -72,6 +80,14 @@ typedef struct _AppTypeDef
   uint8_t Outputs;
   uint16_t Inputs;
   Diag_t Diag;
+
+  struct
+  {
+    uint8_t Status;
+    uint8_t Outputs;
+    uint32_t UpTimeSec;
+  }Karuna;
+
 }Device_t;
 /* USER CODE END ET */
 
@@ -112,6 +128,8 @@ extern void init_app_cpp_domain(void);
 /* Private defines -----------------------------------------------------------*/
 #define DO_EN_Pin GPIO_PIN_8
 #define DO_EN_GPIO_Port GPIOI
+#define RS_485_DIR_Pin GPIO_PIN_8
+#define RS_485_DIR_GPIO_Port GPIOF
 #define AI_CS_Pin GPIO_PIN_0
 #define AI_CS_GPIO_Port GPIOA
 #define AI_MOSI_Pin GPIO_PIN_1
