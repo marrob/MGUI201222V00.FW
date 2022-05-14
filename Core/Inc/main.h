@@ -36,6 +36,7 @@ extern "C" {
 #include "common.h"
 #include "DisplayLight.h"
 #include "PowerLed.h"
+#include "GuiItf.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -124,10 +125,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
-uint8_t ReadKarunaStatus(void);
-void WriteKarunaControl(uint8_t p_Output);
-uint8_t GetUptimeCount();
 
 extern void init_app_cpp_domain(void);
 

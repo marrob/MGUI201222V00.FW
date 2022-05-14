@@ -7,13 +7,13 @@ int mTickGUICount;
 #ifndef SIMULATOR
 extern "C"
 { 
-	uint8_t GetUptimeCount();
+	uint8_t GuiItfGetKarunaUptimeCnt();
 }
 
 #else
 
 //SIMULATED
-uint8_t SettingsScreenView::GetUptimeCount()
+uint8_t SettingsScreenView::GuiItfGetKarunaUptimeCnt()
 {
 	mUptimeCounter++;
 	return mUptimeCounter;
@@ -44,7 +44,7 @@ void SettingsScreenView::handleTickEvent()
 	//Wait for 0.5sec
 	if (mTickGUICount % 30 == 0)
 	{
-		uint8_t uptime = GetUptimeCount();
+		uint8_t uptime = GuiItfGetKarunaUptimeCnt();
 
 		Unicode::snprintf(lblKarunaUptimeBuffer , 4, "%d", uptime); 
 		lblKarunaUptime.invalidate();

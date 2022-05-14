@@ -48,8 +48,8 @@ public:
 
 #ifdef SIMULATOR
 //SIMULATED
-    uint8_t ReadKarunaStatus();
-    void WriteKarunaControl(uint8_t p_Output);
+    uint8_t GuiItfGetKarunaStatus();
+    void GuiItfKarunaControl(uint8_t p_Output);
 #endif
        
 

@@ -49,13 +49,13 @@ extern "C"
 	//#define KRN_STAT_DSD_PCM        (uint8_t)1<<4
 	//#define KRN_STAT_H51            (uint8_t)1<<5
 	//#define KRN_STAT_H53            (uint8_t)1<<6
-	uint8_t ReadKarunaStatus();
+	uint8_t GuiItfGetKarunaStatus();
 
 	//#define KRN_CTRL_RCA            (uint8_t)1<<0
 	//#define KRN_CTRL_BNC            (uint8_t)1<<1
 	//#define KRN_CTRL_XLR            (uint8_t)1<<2
 	//#define KRN_CTRL_I2S            (uint8_t)1<<3
-	void WriteKarunaControl(uint8_t p_Output);
+	void GuiItfKarunaControl(uint8_t p_Output);
 
 }
 
@@ -63,12 +63,12 @@ extern "C"
 
 //SIMULATED
 
-uint8_t MainView::ReadKarunaStatus()
+uint8_t MainView::GuiItfGetKarunaStatus()
 {
 	return 0b00000001;
 }
 
-void MainView::WriteKarunaControl(uint8_t p_Output)
+void MainView::GuiItfKarunaControl(uint8_t p_Output)
 {
 }
 
@@ -139,7 +139,7 @@ void MainView::setupScreen()
 void MainView::RefreshHDMIOutput()
 { 
 	SetBit(&mKarunaControl, mIsHdmiON, 3); 
-	WriteKarunaControl(mKarunaControl);
+	GuiItfKarunaControl(mKarunaControl);
 
 	btnHDMI.setBoxWithBorderColors(GetOutputColor(mIsHdmiON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsHdmiON)
@@ -158,7 +158,7 @@ void MainView::RefreshHDMIOutput()
 void MainView::RefreshRCAOutput()
 { 
 	SetBit(&mKarunaControl, mIsRcaON, 0);
-	WriteKarunaControl(mKarunaControl);
+	GuiItfKarunaControl(mKarunaControl);
 
 	btnRCA.setBoxWithBorderColors(GetOutputColor(mIsRcaON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsRcaON)
@@ -175,7 +175,7 @@ void MainView::RefreshRCAOutput()
 void MainView::RefreshBNCOutput()
 { 
 	SetBit(&mKarunaControl, mIsBncON, 1);
-	WriteKarunaControl(mKarunaControl);
+	GuiItfKarunaControl(mKarunaControl);
 
 	btnBNC.setBoxWithBorderColors(GetOutputColor(mIsBncON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsBncON)
@@ -192,7 +192,7 @@ void MainView::RefreshBNCOutput()
 void MainView::RefreshXLROutput()
 { 
 	SetBit(&mKarunaControl, mIsXlrON, 2);
-	WriteKarunaControl(mKarunaControl);
+	GuiItfKarunaControl(mKarunaControl);
 
 	btnXLR.setBoxWithBorderColors(GetOutputColor(mIsXlrON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsXlrON)
@@ -607,7 +607,7 @@ void MainView::handleTickEvent()
 void MainView::RefreshAudioAndClockInfo()
 {
 	//Read audio format
-	uint8_t  KRN_STAT = ReadKarunaStatus();
+	uint8_t  KRN_STAT = GuiItfGetKarunaStatus();
 	 
 	SetDSDPCM(KRN_STAT);
 	SetBitDepth(KRN_STAT);

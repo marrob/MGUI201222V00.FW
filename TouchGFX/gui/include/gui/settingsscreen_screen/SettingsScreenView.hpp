@@ -16,7 +16,7 @@ public:
  
 #ifdef SIMULATOR
     
-    uint8_t GetUptimeCount();
+    uint8_t GuiItfGetKarunaUptimeCnt();
 
 #endif
 
