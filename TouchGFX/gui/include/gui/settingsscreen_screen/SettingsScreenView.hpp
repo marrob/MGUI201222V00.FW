@@ -11,6 +11,15 @@ public:
     virtual ~SettingsScreenView() {}
     virtual void setupScreen();
     virtual void tearDownScreen();
+
+    virtual void handleTickEvent();
+ 
+#ifdef SIMULATOR
+    
+    uint8_t GetUptimeCount();
+
+#endif
+
 protected:
 };
 

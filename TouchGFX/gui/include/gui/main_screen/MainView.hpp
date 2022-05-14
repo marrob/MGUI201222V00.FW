@@ -16,6 +16,10 @@ public:
     virtual  void ToggleBNC();
     virtual  void ToggleXLR();
 
+    virtual void handleTickEvent();
+
+    void RefreshAudioAndClockInfo(); 
+
     void RefreshBNCOutput();
     void RefreshRCAOutput();    
     void RefreshHDMIOutput();
@@ -36,11 +40,18 @@ public:
     colortype GetOutputColor(bool p_State);
     colortype GetThermalColor(bool p_State);
     bool ToBinary(int number, int p_Position);
-    
+    void CopyBit(int input, int* output, int CopyFrom, int CopyTo);
+    void SetBit(uint8_t* input, bool bit, int SetTo);
+
     virtual void OpenScreenoff();
     virtual void ShowDipslay();
-     
-    void setCount(uint8_t countValue); 
+
+#ifdef SIMULATOR
+//SIMULATED
+    uint8_t ReadKarunaStatus();
+    void WriteKarunaControl(uint8_t p_Output);
+#endif
+       
 
 protected:
 

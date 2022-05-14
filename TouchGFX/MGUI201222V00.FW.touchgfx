@@ -1037,6 +1037,41 @@
             "EndY": 1,
             "LineWidth": 2,
             "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea2_1_1_1",
+            "X": 40,
+            "Y": 384,
+            "Width": 295,
+            "Height": 44,
+            "TextId": "__SingleUse_9C3M",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 200,
+              "Green": 200,
+              "Blue": 200
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "lblKarunaUptime",
+            "X": 344,
+            "Y": 384,
+            "Width": 51,
+            "Height": 44,
+            "TextId": "__SingleUse_542M",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 200,
+              "Green": 200,
+              "Blue": 200
+            },
+            "Wildcard1": {
+              "TextId": "__SingleUse_P0TG",
+              "UseBuffer": true,
+              "BufferSize": 10
+            }
           }
         ],
         "Interactions": [

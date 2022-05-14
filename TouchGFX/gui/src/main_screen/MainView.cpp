@@ -3,6 +3,7 @@
 #include <touchgfx/containers/buttons/ImageButtonStyle.hpp>
 #include "BitmapDatabase.hpp" 
 
+//Default colors
 colortype GRAYCOLOR;
 colortype MIDGRAYCOLOR;
 colortype BLACKCOLOR;
@@ -10,25 +11,72 @@ colortype CORECOLOR;
 colortype DARKGRAYCOLOR;
 colortype REDCOLOR;
 
+//Buttons
+uint8_t mKarunaControl;
+
 bool mIsHdmiON;
 bool mIsRcaON;
 bool mIsXlrON;
 bool mIsBncON;
 
+//CLOCKS
 bool mIs24Locked;
 bool mIs245Locked;
 bool mIs22Locked;
 bool mIsIntExt;
 
+//Temperature
 int mTemp;
+
+//Audio
 int mAudioFormat;
 
+//Gui Refresh
+int mTickCount;
+
 #ifndef SIMULATOR
-  extern "C"
-  {
-	  void SayHelloWorld(uint8_t p);
-  }
+extern "C"
+{
+	
+	//uint8_t ReadDASClockTemperatue(); - under developing
+	//uint8_t ReadDASClockOutputs();
+
+	//Audio Format - read karuna status bits.  
+	//#define KRN_STAT_A0             (uint8_t)1<<0
+	//#define KRN_STAT_A1             (uint8_t)1<<1
+	//#define KRN_STAT_A2             (uint8_t)1<<2
+	//#define KRN_STAT_A3             (uint8_t)1<<3
+	//#define KRN_STAT_DSD_PCM        (uint8_t)1<<4
+	//#define KRN_STAT_H51            (uint8_t)1<<5
+	//#define KRN_STAT_H53            (uint8_t)1<<6
+	uint8_t ReadKarunaStatus();
+
+	//#define KRN_CTRL_RCA            (uint8_t)1<<0
+	//#define KRN_CTRL_BNC            (uint8_t)1<<1
+	//#define KRN_CTRL_XLR            (uint8_t)1<<2
+	//#define KRN_CTRL_I2S            (uint8_t)1<<3
+	void WriteKarunaControl(uint8_t p_Output);
+
+}
+
+#else
+
+//SIMULATED
+
+uint8_t MainView::ReadKarunaStatus()
+{
+	return 0b00000001;
+}
+
+void MainView::WriteKarunaControl(uint8_t p_Output)
+{
+}
+
 #endif
+
+
+
+
 
 MainView::MainView()
 {
@@ -50,11 +98,11 @@ MainView::MainView()
 	MIDGRAYCOLOR = touchgfx::Color::getColorFrom24BitRGB(64, 64, 64);
 	REDCOLOR = touchgfx::Color::getColorFrom24BitRGB(0x8B, 0, 0);
 
-	// CLOCK lock
+	// Simulate CLOCK lock
 	mIs24Locked = true;
 	mIs245Locked = true;
 	mIs22Locked = true;
-	mIsIntExt = true;
+	mIsIntExt = false;
 
 	Refresh24Thermal();
 	Refresh245Thermal();
@@ -64,16 +112,8 @@ MainView::MainView()
 	//OUTPUTS 
 	SetOnAllOutput();
 
-	//TEMP 
-	mTemp = 65;
-	SetTemp(mTemp);
-
-	//AUDIO FORMAT
-	mAudioFormat = 0b00001000;
-
-	SetDSDPCM(mAudioFormat);
-	SetBitDepth(mAudioFormat);
-	SetFreq(mAudioFormat);
+	//Audio and Clocks temperature
+	RefreshAudioAndClockInfo();
 }
 
 void MainView::SetOnAllOutput()
@@ -86,23 +126,20 @@ void MainView::SetOnAllOutput()
 	RefreshHDMIOutput();
 	RefreshRCAOutput();
 	RefreshBNCOutput();
-	RefreshXLROutput();
-	/*btnHDMI.setBoxWithBorderColors(GetOutputColor(mIsHdmiON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
-	btnRCA.setBoxWithBorderColors(GetOutputColor(mIsRcaON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
-	btnBNC.setBoxWithBorderColors(GetOutputColor(mIsBncON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
-	btnXLR.setBoxWithBorderColors(GetOutputColor(mIsXlrON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);*/
+	RefreshXLROutput(); 
 }
 
 void MainView::setupScreen()
 {
-	setCount(0);
 }
 
 
 //AUDIO OUTPUTS
 
 void MainView::RefreshHDMIOutput()
-{
+{ 
+	SetBit(&mKarunaControl, mIsHdmiON, 3); 
+	WriteKarunaControl(mKarunaControl);
 
 	btnHDMI.setBoxWithBorderColors(GetOutputColor(mIsHdmiON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsHdmiON)
@@ -119,7 +156,10 @@ void MainView::RefreshHDMIOutput()
 }
 
 void MainView::RefreshRCAOutput()
-{
+{ 
+	SetBit(&mKarunaControl, mIsRcaON, 0);
+	WriteKarunaControl(mKarunaControl);
+
 	btnRCA.setBoxWithBorderColors(GetOutputColor(mIsRcaON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsRcaON)
 	{
@@ -133,7 +173,10 @@ void MainView::RefreshRCAOutput()
 }
 
 void MainView::RefreshBNCOutput()
-{
+{ 
+	SetBit(&mKarunaControl, mIsBncON, 1);
+	WriteKarunaControl(mKarunaControl);
+
 	btnBNC.setBoxWithBorderColors(GetOutputColor(mIsBncON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsBncON)
 	{
@@ -147,7 +190,10 @@ void MainView::RefreshBNCOutput()
 }
 
 void MainView::RefreshXLROutput()
-{
+{ 
+	SetBit(&mKarunaControl, mIsXlrON, 2);
+	WriteKarunaControl(mKarunaControl);
+
 	btnXLR.setBoxWithBorderColors(GetOutputColor(mIsXlrON), DARKGRAYCOLOR, BLACKCOLOR, BLACKCOLOR);
 	if (mIsXlrON)
 	{
@@ -242,7 +288,7 @@ void MainView::PaintDot(colortype p_Dot1, colortype p_Dot2, colortype p_Dot3)
 }
 
 
-//SET AUDIO VALUE
+//SET GUI AUDIO VALUE
 
 /// <summary>
 /// DSD_PCM , SEL_3_ISO , SEL_2_ISO , SEL_1_ISO , SEL_0_ISO - 5 bites  inform�ci�
@@ -302,6 +348,7 @@ void  MainView::SetDSDPCM(int p_AudiFormat)
 	lblDSDValue.invalidate();
 	lblValueFormat.invalidate();
 }
+
 void  MainView::SetBitDepth(int p_AudiFormat)
 {
 	bool isDsd = ToBinary(p_AudiFormat, 4);
@@ -312,9 +359,10 @@ void  MainView::SetBitDepth(int p_AudiFormat)
 	}
 	else
 	{
-		Unicode::strncpy(lblValueBitDepthBuffer, "24 bit", 7);
+		Unicode::strncpy(lblValueBitDepthBuffer, "24 bit", 7); 		
+	}
 
-		//Ezt kell majd megh�vni ha bebizonyosodott a bitdepth
+	//Ezt kell majd meghivni ha Lyuben kijavította a hibát de addig hazudunk
 
 		/*int BitDepth = p_AudiFormat >> 5;
 		BitDepth = BitDepth & 0b00000011;
@@ -323,29 +371,29 @@ void  MainView::SetBitDepth(int p_AudiFormat)
 		{
 		case 0b00:
 		{
-			Unicode::strncpy(lblValueBitDepthBuffer, "16 bit", 7);
+			Unicode::strncpy(lblValueBitDepthBuffer, "1 bit", 6);
 		}break;
 		case 0b01:
 		{
-			Unicode::strncpy(lblValueBitDepthBuffer, "24 bit", 7);
+			Unicode::strncpy(lblValueBitDepthBuffer, "16 bit", 7);
 		}break;
 		case 0b10:
 		{
-			Unicode::strncpy(lblValueBitDepthBuffer, "32 bit", 7);
+			Unicode::strncpy(lblValueBitDepthBuffer, "24 bit", 7);
 		}break;
 		case 0b11:
 		{
-			Unicode::strncpy(lblValueBitDepthBuffer, "N.A.", 5);
+			Unicode::strncpy(lblValueBitDepthBuffer, "32 bit", 7);
 		}break;
 
 		default:
 			break;
 		}*/
-	}
 
 
 	lblValueBitDepth.invalidate();
 }
+
 void  MainView::SetFreq(int p_AudiFormat)
 {
 	bool isDsd = ToBinary(p_AudiFormat, 4);
@@ -415,25 +463,25 @@ void  MainView::SetFreq(int p_AudiFormat)
 
 		switch (freqVal)
 		{
-			case 0b10:
-			{
-				Unicode::strncpy(lblValueFreqBuffer, "2.8 MHz", 8);
-			}break;
-			case 0b11:
-			{ 
-				Unicode::strncpy(lblValueFreqBuffer, "5.8 MHz", 8);
-			}break;
-			case 0b01:
-			{
-				Unicode::strncpy(lblValueFreqBuffer, "11.2 MHz", 9);
-			}break;
-			case 0b00:
-			{
-				Unicode::strncpy(lblValueFreqBuffer, "22.6 MHz", 9);
-			}break;
+		case 0b10:
+		{
+			Unicode::strncpy(lblValueFreqBuffer, "2.8 MHz", 8);
+		}break;
+		case 0b11:
+		{
+			Unicode::strncpy(lblValueFreqBuffer, "5.8 MHz", 8);
+		}break;
+		case 0b01:
+		{
+			Unicode::strncpy(lblValueFreqBuffer, "11.2 MHz", 9);
+		}break;
+		case 0b00:
+		{
+			Unicode::strncpy(lblValueFreqBuffer, "22.6 MHz", 9);
+		}break;
 
-			default:
-				break;
+		default:
+			break;
 		}
 	}
 
@@ -445,10 +493,7 @@ void  MainView::SetFreq(int p_AudiFormat)
 
 void MainView::ToggleHDMI()
 {
-#ifndef SIMULATOR
-  SayHelloWorld(1);
-#endif
-  mIsHdmiON = !mIsHdmiON;
+	mIsHdmiON = !mIsHdmiON;
 	RefreshHDMIOutput();
 }
 
@@ -505,6 +550,37 @@ bool MainView::ToBinary(int number, int position)
 	return ret;
 }
 
+void MainView::CopyBit(int input, int* output, int CopyFrom, int CopyTo)
+{
+	//Example
+	//CopyBit(inputsRaw, &outputs, 15, 3);
+
+	bool bit = ToBinary(input, CopyFrom);
+
+	if (bit)
+	{
+		*output = (1 << CopyTo) | *output;
+	}
+	else
+	{
+		*output = (~(1 << CopyTo)) & *output;
+	}
+}
+
+void MainView::SetBit(uint8_t* input, bool bit ,int SetTo)
+{ 
+	if (bit)
+	{
+		*input = (1 << SetTo) | *input;
+	}
+	else
+	{
+		*input = (~(1 << SetTo)) & *input;
+	}
+}
+
+
+//SCREEN
 
 void  MainView::OpenScreenoff()
 {
@@ -516,11 +592,31 @@ void  MainView::ShowDipslay()
 
 }
 
+// Tick event
 
-void MainView::setCount(uint8_t countValue)
+void MainView::handleTickEvent()
 {
-	//Unicode::snprintf(countTxtBuffer, 3, "%d", countValue);
-	//// Invalidate text area, which will result in it being redrawn in next tick.
-	//countTxt.invalidate();
+	mTickCount++;
+	//Wait for 0.5sec
+	if (mTickCount % 30 == 0)
+	{
+		RefreshAudioAndClockInfo();
+	}
 }
 
+void MainView::RefreshAudioAndClockInfo()
+{
+	//Read audio format
+	uint8_t  KRN_STAT = ReadKarunaStatus();
+	 
+	SetDSDPCM(KRN_STAT);
+	SetBitDepth(KRN_STAT);
+	SetFreq(KRN_STAT);
+
+	//Simulation
+	int temp = 60; // ReadAnalogOutput_1();
+	SetTemp(temp);
+
+	//Debug - CheckTick time
+	//lblValueFormat.setVisible(!lblValueFormat.isVisible());
+}
