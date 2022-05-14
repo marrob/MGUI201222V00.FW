@@ -264,6 +264,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/GuiItf.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/Core/Peri.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/Peri.c</locationURI>
+		</link>
+		<link>
 			<name>Application/User/Core/PowerLed.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/PowerLed.c</locationURI>
@@ -332,6 +337,11 @@
 			<name>Application/User/Core/Inc/GuiItf.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/GuiItf.h</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/Inc/Peri.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Inc/Peri.h</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/Inc/PowerLed.h</name>

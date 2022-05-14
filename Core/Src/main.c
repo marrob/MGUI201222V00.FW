@@ -39,13 +39,6 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-/*** MCP3208 ***/
-#define MCP320X_CH0          0
-#define MCP320X_CH1          1
-#define MCP320X_CH2          2
-#define MCP320X_CH3          3
-#define MCP320X_CON_SINGLE_END  (1<<3)
-
 /*** SDRAM ***/
 /* SDRAM refresh counter (100Mhz SD clock)    */
 #define SDRAM_REFRESH_COUNT                      ((uint32_t)0x0603)
@@ -939,10 +932,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(TS_RST_GPIO_Port, TS_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SPI_CLK_Pin|PER_MOSI_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DIO_WR_Pin|SPI_CLK_Pin|PER_MOSI_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PSP_EN_Pin|PER_CLR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, PSP_EN_Pin|DIO_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : DO_EN_Pin */
   GPIO_InitStruct.Pin = DO_EN_Pin;
@@ -991,8 +984,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TS_INT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SPI_CLK_Pin PER_MOSI_Pin */
-  GPIO_InitStruct.Pin = SPI_CLK_Pin|PER_MOSI_Pin;
+  /*Configure GPIO pins : DIO_WR_Pin SPI_CLK_Pin PER_MOSI_Pin */
+  GPIO_InitStruct.Pin = DIO_WR_Pin|SPI_CLK_Pin|PER_MOSI_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1004,8 +997,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PER_MISO_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PSP_EN_Pin PER_CLR_Pin */
-  GPIO_InitStruct.Pin = PSP_EN_Pin|PER_CLR_Pin;
+  /*Configure GPIO pins : PSP_EN_Pin DIO_CS_Pin */
+  GPIO_InitStruct.Pin = PSP_EN_Pin|DIO_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1066,134 +1059,7 @@ int Read (uint32_t address, uint32_t size, uint8_t* buffer)
 }
 
 
-/* Temperature  --------------------------------------------------------------*/
-void SwSPI_TransmittReceive(uint8_t *tx, uint8_t *rx, int length)
-{
-  for(uint8_t j=0; j < length; j++)
-  {
-    uint8_t rx_mask = 0x80;
-    uint8_t tx_mask = 0x80;
-    for(uint8_t i = 0; i<8;i++)
-    {
-      HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
-      if(tx[j] & tx_mask)
-        HAL_GPIO_WritePin(AI_MOSI_GPIO_Port, AI_MOSI_Pin, GPIO_PIN_SET);
-      else
-        HAL_GPIO_WritePin(AI_MOSI_GPIO_Port, AI_MOSI_Pin, GPIO_PIN_RESET);
-      tx_mask>>=1;
-      if(HAL_GPIO_ReadPin(AI_MISO_GPIO_Port, AI_MISO_Pin) == GPIO_PIN_SET)
-        rx[j] |= rx_mask;
-      else
-        rx[j] &= ~rx_mask;
-      rx_mask>>=1;
-      HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_SET);
-    }
-    HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
-  }
-}
-  #define MACP320X_ARRAY_SIZE 3
-  uint8_t result[MACP320X_ARRAY_SIZE];
-  uint8_t param[MACP320X_ARRAY_SIZE];
-/*
- *
- *config:
- *   MSB                          LSB
- *   0  | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
- *   X  | X | X | X |S/D|D2 |D1 |D0 |
- */
-uint16_t MCP320x_GetValue(uint8_t config)
-{
-  uint16_t value = 0;
-  param[0] = 0x01;
-  param[1] = config << 0x04;
-  param[2] = 0;
-  HAL_GPIO_WritePin(AI_CS_GPIO_Port, AI_CS_Pin, GPIO_PIN_RESET);
-  SwSPI_TransmittReceive(param, result, MACP320X_ARRAY_SIZE);
-  HAL_GPIO_WritePin(AI_CS_GPIO_Port, AI_CS_Pin, GPIO_PIN_SET);
-  value = (result[1]&0x03)<<8;
-  value |= result[2];
-  return value;
-}
 
-double GetTemperature(uint8_t channel)
-{
-  uint16_t adc = MCP320x_GetValue(MCP320X_CON_SINGLE_END | channel /* MCP320X_CH0*/);
-  double volts = adc * 2.5/1024;
-  double temp = (-2.3654*volts*volts) + (-78.154*volts) + 153.857;
-  return temp;
-}
-
-/* DIO -----------------------------------------------------------------------*/
-void DIO_Init(void){
-  /*** DO Clear ***/
-  HAL_GPIO_WritePin(PER_CLR_GPIO_Port, PER_CLR_Pin, GPIO_PIN_RESET);
-  DelayUs(1);
-  HAL_GPIO_WritePin(PER_CLR_GPIO_Port, PER_CLR_Pin, GPIO_PIN_SET);
-  DelayUs(1);
-}
-
-void DIO_Clock(void)
-{
-  HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_SET);
-  DelayUs(5);
-  HAL_GPIO_WritePin(SPI_CLK_GPIO_Port, SPI_CLK_Pin, GPIO_PIN_RESET);
-  DelayUs(5);
-}
-
-uint16_t GetInputs(void)
-{
-  return Device.Inputs;
-}
-
-uint16_t ReadInputs(void)
-{
-  uint16_t retval = 0;
-  uint16_t mask = 0x8000;
-
-  /*** Load ***/
-  HAL_GPIO_WritePin(PER_LD_GPIO_Port, PER_LD_Pin, GPIO_PIN_RESET);
-  DIO_Clock();
-  HAL_GPIO_WritePin(PER_LD_GPIO_Port, PER_LD_Pin, GPIO_PIN_SET);
-
-  for(uint8_t j = 0; j < 16; j++)
-  {
-    if(HAL_GPIO_ReadPin(PER_MISO_GPIO_Port, PER_MISO_Pin) == GPIO_PIN_SET)
-      retval|= mask;
-    else
-      retval&=~mask;
-    mask >>=1;
-    DIO_Clock();
-  }
-  return retval;
-}
-
-void SetOutputs(uint8_t data)
-{
-  Device.Outputs = data;
-
-  uint8_t mask = 0x80;
-  /*** Write ***/
-  for(uint8_t i=0; i<8; i++)
-  {
-    if(data & mask)
-      HAL_GPIO_WritePin(PER_MOSI_GPIO_Port, PER_MOSI_Pin, GPIO_PIN_SET);
-    else
-      HAL_GPIO_WritePin(PER_MOSI_GPIO_Port, PER_MOSI_Pin, GPIO_PIN_RESET);
-
-    mask>>=1;
-    DIO_Clock();
-  }
-
-  /*** Update ***/
-//  HAL_GPIO_WritePin(PER_WR_GPIO_Port, PER_WR_Pin, GPIO_PIN_SET);
-  DelayUs(1);
-//  HAL_GPIO_WritePin(PER_WR_GPIO_Port, PER_WR_Pin, GPIO_PIN_RESET);
-}
-
-uint8_t GetOutputs(void)
-{
-  return Device.Outputs;
-}
 
 /* FreeRTOS ------------------------------------------------------------------*/
 void configureTimerForRunTimeStats(void)
@@ -1307,11 +1173,11 @@ void UsbParser(char *request)
 //        }
       else if(!strcmp(cmd, "DIG:INP:U16?"))
       {
-        sprintf(response, "%04X",GetInputs());
+        sprintf(response, "%04X",PeriGetInputs());
       }
       else if(!strcmp(cmd, "DIG:OUT:U8?"))
       {
-        sprintf(response, "%02X",GetOutputs());
+        sprintf(response, "%02X",PeriGetOutputs());
       }
 //        else if(!strcmp(cmd, "TEM:ARR?"))
 //        {
@@ -1352,7 +1218,7 @@ void UsbParser(char *request)
       else if(!strcmp(cmd, "DIG:OUT:SET:U8"))
       {
         uint8_t value = strtol(arg1, NULL, 16);
-        SetOutputs(value);
+        PeriSetOutputs(value);
         strcpy(response, "RDY");
       }
       else

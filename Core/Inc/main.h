@@ -37,6 +37,7 @@ extern "C" {
 #include "DisplayLight.h"
 #include "PowerLed.h"
 #include "GuiItf.h"
+#include "Peri.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -79,9 +80,6 @@ typedef struct _DiagTypeDef
 
 typedef struct _AppTypeDef
 {
-  double Temperature[4];
-  uint8_t Outputs;
-  uint16_t Inputs;
   Diag_t Diag;
 
   struct
@@ -147,6 +145,8 @@ extern void init_app_cpp_domain(void);
 #define TS_RST_GPIO_Port GPIOH
 #define TS_INT_Pin GPIO_PIN_12
 #define TS_INT_GPIO_Port GPIOH
+#define DIO_WR_Pin GPIO_PIN_12
+#define DIO_WR_GPIO_Port GPIOB
 #define SPI_CLK_Pin GPIO_PIN_13
 #define SPI_CLK_GPIO_Port GPIOB
 #define PER_MISO_Pin GPIO_PIN_14
@@ -155,8 +155,8 @@ extern void init_app_cpp_domain(void);
 #define PER_MOSI_GPIO_Port GPIOB
 #define PSP_EN_Pin GPIO_PIN_2
 #define PSP_EN_GPIO_Port GPIOG
-#define PER_CLR_Pin GPIO_PIN_3
-#define PER_CLR_GPIO_Port GPIOG
+#define DIO_CS_Pin GPIO_PIN_3
+#define DIO_CS_GPIO_Port GPIOG
 #define PER_LD_Pin GPIO_PIN_6
 #define PER_LD_GPIO_Port GPIOC
 #define DISP_EN_Pin GPIO_PIN_7
