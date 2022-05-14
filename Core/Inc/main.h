@@ -125,6 +125,10 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
+uint8_t ReadKarunaStatus(void);
+void WriteKarunaControl(uint8_t p_Output);
+uint8_t GetUptimeCount();
+
 extern void init_app_cpp_domain(void);
 
 /* USER CODE END EFP */

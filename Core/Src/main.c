@@ -1229,6 +1229,24 @@ uint8_t GetDisply(void)
   return HAL_GPIO_ReadPin(DISP_EN_GPIO_Port, DISP_EN_Pin) == GPIO_PIN_SET;
 }
 
+/* GuiItf--------------------------------------------------------------------*/
+
+uint8_t ReadKarunaStatus(void)
+{
+	return 0;
+}
+
+
+void WriteKarunaControl(uint8_t p_Output)
+{
+
+}
+
+uint8_t GetUptimeCount(void)
+{
+ return 0;
+}
+
 
 void UsbParser(char *request)
 {
