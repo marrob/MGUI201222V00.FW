@@ -123,6 +123,13 @@ const osThreadAttr_t RS485Tx_Task_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for Peri_Task */
+osThreadId_t Peri_TaskHandle;
+const osThreadAttr_t Peri_Task_attributes = {
+  .name = "Peri_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for USBUartRxQueue */
 osMessageQueueId_t USBUartRxQueueHandle;
 const osMessageQueueAttr_t USBUartRxQueue_attributes = {
@@ -158,6 +165,7 @@ void UsbRxTask(void *argument);
 void LiveLedTask(void *argument);
 void RS485RxTask(void *argument);
 void RS485TxTask(void *argument);
+void PeriTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 /*** Live LED***/
@@ -294,6 +302,9 @@ int main(void)
 
   /* creation of RS485Tx_Task */
   RS485Tx_TaskHandle = osThreadNew(RS485TxTask, NULL, &RS485Tx_Task_attributes);
+
+  /* creation of Peri_Task */
+  Peri_TaskHandle = osThreadNew(PeriTask, NULL, &Peri_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1044,8 +1055,6 @@ void PSP_Enable(){
   HAL_GPIO_WritePin(PSP_EN_GPIO_Port, PSP_EN_Pin, GPIO_PIN_SET);
 }
 
-
-
 /* Flash ---------------------------------------------------------------------*/
 int Read (uint32_t address, uint32_t size, uint8_t* buffer)
 {
@@ -1057,9 +1066,6 @@ int Read (uint32_t address, uint32_t size, uint8_t* buffer)
   }
   return 1;
 }
-
-
-
 
 /* FreeRTOS ------------------------------------------------------------------*/
 void configureTimerForRunTimeStats(void)
@@ -1177,7 +1183,7 @@ void UsbParser(char *request)
       }
       else if(!strcmp(cmd, "DIG:OUT:U8?"))
       {
-        sprintf(response, "%02X",PeriGetOutputs());
+        //sprintf(response, "%02X",PeriGetOutputs());
       }
 //        else if(!strcmp(cmd, "TEM:ARR?"))
 //        {
@@ -1336,7 +1342,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(100);
   }
   /* USER CODE END 5 */
 }
@@ -1555,6 +1561,32 @@ void RS485TxTask(void *argument)
     osDelay(100);
   }
   /* USER CODE END RS485TxTask */
+}
+
+/* USER CODE BEGIN Header_PeriTask */
+/**
+* @brief Function implementing the Peri_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_PeriTask */
+void PeriTask(void *argument)
+{
+  /* USER CODE BEGIN PeriTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    Device.Peri.Inputs = PeriGetInputs();
+    PeriSetOutputs(Device.Peri.Outputs);
+
+    Device.Peri.Temperatures[AI_CH0] = PeriGetTemperature(MCP320X_CH0);
+    Device.Peri.Temperatures[AI_CH1] = PeriGetTemperature(MCP320X_CH1);
+    Device.Peri.Temperatures[AI_CH2] = PeriGetTemperature(MCP320X_CH2);
+    Device.Peri.Temperatures[AI_CH3] = PeriGetTemperature(MCP320X_CH3);
+
+    osDelay(100);
+  }
+  /* USER CODE END PeriTask */
 }
 
 /**

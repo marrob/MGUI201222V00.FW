@@ -89,6 +89,14 @@ typedef struct _AppTypeDef
     uint32_t UpTimeSec;
   }Karuna;
 
+  struct
+  {
+    double AnalogInputs[4];
+    double Temperatures[4];
+    uint8_t Outputs;
+    uint16_t Inputs;
+  }Peri;
+
 }Device_t;
 
 extern Device_t Device;

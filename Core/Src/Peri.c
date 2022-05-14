@@ -9,10 +9,17 @@
 #include "main.h"
 #include "Peri.h"
 
+/*** MCP3208 ***/
+#define MCP320X_CH0          0
+#define MCP320X_CH1          1
+#define MCP320X_CH2          2
+#define MCP320X_CH3          3
+#define MCP320X_CON_SINGLE_END  (1<<3)
+
+
 
 static void SwSpiTransmittReceive(uint8_t *tx, uint8_t *rx, int length);
 static void Clock(void);
-static Peri_t _peri;
 
 /* Private user code ---------------------------------------------------------*/
 
@@ -73,10 +80,6 @@ double PeriGetTemperature(uint8_t channel)
   return temp;
 }
 
-void PeriInit(void)
-{
-
-}
 
 static void Clock(void)
 {
@@ -86,12 +89,8 @@ static void Clock(void)
   DelayUs(5);
 }
 
-uint16_t PeriGetInputs(void)
-{
-  return _peri.Inputs;
-}
 
-uint16_t ReadInputs(void)
+uint16_t PeriGetInputs(void)
 {
   uint16_t retval = 0;
   uint16_t mask = 0x8000;
@@ -122,8 +121,6 @@ uint16_t ReadInputs(void)
 
 void PeriSetOutputs(uint8_t data)
 {
-  _peri.Outputs = data;
-
   uint8_t mask = 0x80;
   /*** Write ***/
   for(uint8_t i=0; i<8; i++)
@@ -141,9 +138,4 @@ void PeriSetOutputs(uint8_t data)
   HAL_GPIO_WritePin(DIO_WR_GPIO_Port, DIO_WR_Pin, GPIO_PIN_SET);
   DelayUs(1);
   HAL_GPIO_WritePin(DIO_WR_GPIO_Port, DIO_WR_Pin, GPIO_PIN_RESET);
-}
-
-uint8_t PeriGetOutputs(void)
-{
-  return _peri.Outputs;
 }
