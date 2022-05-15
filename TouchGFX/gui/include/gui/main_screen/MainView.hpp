@@ -21,7 +21,7 @@ public:
     void RefreshAudioAndClockInfo(); 
 
     void RefreshBNCOutput();
-    void RefreshRCAOutput();    
+    void RefreshRCAOutput();
     void RefreshHDMIOutput();
     void RefreshXLROutput();
 
@@ -47,7 +47,6 @@ public:
     virtual void ShowDipslay();
 
 #ifdef SIMULATOR
-//SIMULATED
     uint8_t GuiItfGetKarunaStatus();
     void GuiItfKarunaControl(uint8_t p_Output);
 #endif

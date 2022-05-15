@@ -15,9 +15,7 @@ public:
     virtual void handleTickEvent();
  
 #ifdef SIMULATOR
-    
     uint8_t GuiItfGetKarunaUptimeCnt();
-
 #endif
 
 protected:
